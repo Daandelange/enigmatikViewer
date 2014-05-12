@@ -9,8 +9,6 @@
 // todo: make a file increment system to store images in the receival-order while storing their original names in an xml file.
 // The original file name can then be shown for a few secs once you unlock a new slide.
 
-// todo: slidercontrol panel
-
 // todo: slider rendering system
 
 // todo: slider loading system
@@ -25,21 +23,31 @@ void enigmatikSlideshow::setup() {
 	
 	
 	// todo: load currentSlideNum from xml settings
-	currentSlideNum=0;
-	nextSlideNum=-1; // -1 = none;
-	imagesFolder="slideshowImages";
+	currentSlideNum = 0;
+	nextSlideNum = currentSlideNum + slideDirection; // -1 = none;
+	imagesFolder = "slideshowImages";
+	
+	// shader stuff
+#ifdef TARGET_OPENGLES
+	sGlitch2.load("shaders/shadersES2/shader");
+#else
+	if(ofIsGLProgrammableRenderer()){
+		sGlitch2.load("shaders/shadersGL3/shader");
+	}else{
+		sGlitch2.load("shaders/shadersGL2/shader");
+	}
+#endif
 	
 	// setup GUI
 	gui.setup("Slide Show Control", "slideShowSettings.xml");
 	gui.add( prevButton.setup("<-- PREV SLIDE") );
 	gui.add( currentSlideNum.setup("Current slide", 0, 0, 0) );
+	//currentSlideNum.unregisterMouseEvents(); not working
 	gui.add( nextButton.setup("--> NEXT SLIDE") );
 	
-	prevButton.addListener(this, &enigmatikSlideshow::loadPrevSlide );
-	nextButton.addListener(this, &enigmatikSlideshow::loadNextSlide );
-	
 	// load last used settings
-	gui.loadFromFile("slideShowSettings.xml");
+	//gui.loadFromFile("slideShowSettings.xml");
+	loadSlideNum();
 	
 	// load images folder
 	reloadFolderContent();
@@ -47,40 +55,143 @@ void enigmatikSlideshow::setup() {
 	// cache current & next Slides
 	cacheCurrentSlides();
 	
+	// init effects and button states
+	resetEffects();
+	
+	// grid for easy shader communication
+	slideGrid.set( ofGetWidth(), ofGetHeight() );
+	slideGrid.setPosition( 0, 0, 0);//ofGetWidth()/2, ofGetHeight()/2, 0 );
+	// 10 pixels per grid square
+	slideGrid.setResolution( ceil(ofGetWidth()/10), ceil(ofGetHeight()/10) );
+	slideGrid.setMode(OF_PRIMITIVE_TRIANGLES);
+	slideGrid.mapTexCoordsFromTexture(currentSlide.getTextureReference());
+	
+	// bind events for quitting
 	ofAddListener(ofEvents().update, this, &enigmatikSlideshow::_update);
 	ofAddListener(ofEvents().draw, this, &enigmatikSlideshow::_draw);
 	ofAddListener(ofEvents().exit, this, &enigmatikSlideshow::_exit);
+	
+	// bind slide-change event to XML writedown
+	currentSlideNum.addListener(this, &enigmatikSlideshow::rememberSlideNum);
+	prevButton.addListener(this, &enigmatikSlideshow::loadPrevSlide );
+	nextButton.addListener(this, &enigmatikSlideshow::loadNextSlide );
 	
 #ifdef USE_THREADED_IMAGE_LOADER
 	// image loaded event
 	ofAddListener(imgLoader.imageLoaded,this, &enigmatikSlideshow::newImageLoaded);
 #endif
+	
+	// setup buttons
+	buttons.setName("Button States");
+	
+	// name virtual buttons/controls/parameters
+	param2.setName("param2");
+	
+#ifdef USE_RPI_GPIO
+	// link virtual buttons to physical buttons
+	
+#endif
+	
+	// add them to a gui group
+	buttons.add( param1 );
+	buttons.add( param5 );
+	buttons.add( param2 );
+	buttons.add( param3 );
+	buttons.add( param4 );
+	//
+	gui.add(buttons);
+	
+	// bind button parameters to glitches
+	param2.addListener(this, &enigmatikSlideshow::glitchEffect2);
+	
+	reRenderOutput=true;
 }
 
 
 // MARK: Loop
-
 void enigmatikSlideshow::update() {
 	
 }
+
 void enigmatikSlideshow::_update(ofEventArgs &e) {
+	// no need to get button state, using interrupts :) (callbacks)
+	
+	// generate mixed image
+	if(true){ // todo: only regen if buttons' state changed
+		//mixedSlide = currentSlide;// tmp
+	}
+	
+	// call the virtual (over-writeable) function
 	update();
 }
 
 
 void enigmatikSlideshow::draw() {
+	ofPushMatrix();
+	ofPushStyle();
+	ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
 	
-	// show slide
-	currentSlide.draw(0,0);
+	currentSlide.bind();
+	nextSlide.bind();
 	
-	// show GUI elements
-	if(showControls){
-		gui.draw();
-	}
+	sGlitch2.begin();
+	// upload variables to shader
+	sGlitch2.setUniform1f("solved2", solved2);
+	sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
+	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
+	ofTexture t;
+	t.allocate(glitchData2);
+	t.loadData(glitchData2);
+	t.allocate(glitchData2);
+	t.bind();
+	sGlitch2.setUniformTexture("glitchData2", t, 2);//t.getTextureData().textureID );
 	
+	currentSlide.getTextureReference().bind();
+	slideGrid.draw();
+	currentSlide.getTextureReference().unbind();
+	
+	//slideGrid.drawWireframe();
+	sGlitch2.end();
+	
+	// tmp
+	ofSetColor(255);
+	glitchData2.draw(-ofGetWidth()/2, -ofGetHeight()/2, ofGetWidth()/3, ofGetHeight()/3 );
+	
+	t.unbind();
+	currentSlide.unbind();
+	nextSlide.unbind();
+	
+	ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
+	ofPopStyle();
+	ofPopMatrix();
 }
 void enigmatikSlideshow::_draw(ofEventArgs &e){
+	// here you can force actions (draw() is virtual)
+	
+	// prevents CPU overload
+	if(!reRenderOutput){
+		//update glitch images
+		
+		// show GUI elements
+		if(showControls) gui.draw();
+		
+		// saves battery
+		ofSleepMillis(50);
+		
+		return;
+	}
+	
 	draw();
+	
+	// show GUI elements
+	if(showControls) gui.draw();
+	
+	reRenderOutput = false;
+	
+	// saves battery
+	ofSleepMillis(50);
+	
+	return;
 }
 
 void enigmatikSlideshow::exit(){
@@ -178,10 +289,13 @@ void enigmatikSlideshow::reloadFolderContent(){
 	
 	
 	// resize/adapt slider range
-	// todo this shit
 	//currentSlideNum.setMax(numSlides); // right way; currently unavailable
 	// url: http://forum.openframeworks.cc/t/dynamic-range-in-ofxslider-ofxgui/15424
-	currentSlideNum.setup(currentSlideNum.getName(), (int)currentSlideNum, 0, numSlides-1); // fucks up GUI
+	// might help: http://forum.openframeworks.cc/t/controlling-a-parameters-from-ofxgui-and-some-kb-shortcut/15171/4
+	//currentSlideNum.setup(currentSlideNum.getName(), (int)currentSlideNum, 0, numSlides-1); // alternative --> fucks up GUI drawing
+	ofParameter<int> tmp;
+	tmp = currentSlideNum;
+	tmp.setMax( numSlides-1 );
 	
 	imageFiles.resize( numSlides );
 	for(int i = 0; i < dir.numFiles(); i++){
@@ -192,22 +306,120 @@ void enigmatikSlideshow::reloadFolderContent(){
 }
 
 void enigmatikSlideshow::loadNextSlide(){
-	currentSlideNum = getRealSlideNum(currentSlideNum+1*slideDirection);
-	nextSlideNum = getRealSlideNum(currentSlideNum+1*currentSlideNum);
+	currentSlideNum = (int) getRealSlideNum((currentSlideNum+1)*slideDirection);
+	nextSlideNum = getRealSlideNum((currentSlideNum+1)*slideDirection);
 	
-	cacheCurrentSlides();
+	if(currentSlideNum >= 0) cacheCurrentSlides();
+	
+	resetEffects();
+	
+	reRenderOutput = true;
 }
 
 void enigmatikSlideshow::loadPrevSlide(){
 	currentSlideNum = getRealSlideNum( currentSlideNum-1*slideDirection);
-	nextSlideNum = getRealSlideNum(currentSlideNum+1*currentSlideNum);
+	nextSlideNum = getRealSlideNum(currentSlideNum+1*slideDirection);
 	
-	cacheCurrentSlides();
+	if(currentSlideNum >= 0) cacheCurrentSlides();
+	
+	resetEffects();
+	
+	reRenderOutput = true;
 }
 
 void enigmatikSlideshow::enableControls(){
 	showControls = true;
 }
+
+bool enigmatikSlideshow::rememberSlideNum(int & value){
+	return false;
+	// this ofXML is fucked up!
+	int slidenum = (int) currentSlideNum;
+	string path = "enigmatik/currentSlideNum";
+	ofXml buffer(path);
+	//buffer.load(path);
+	//if(!buffer.exists(path)) buffer.addValue<int>(path, slidenum, 1);
+	//else buffer.setValue<int>(path, slidenum );
+	//buffer.setAttribute(path, ofToString(slidenum));
+	//buffer.setAttribute(path, "lol");
+	//buffer.setTo(path);
+	buffer.setValue(path, "lol");//ofToString(slidenum) );
+	
+	return buffer.save("enigmatikCurrentSlideNum.xml");
+}
+
+bool enigmatikSlideshow::loadSlideNum(){
+	ofXml buffer;
+	
+	if(!buffer.load("enigmatikCurrentSlideNum.xml")) currentSlideNum=0;
+	else currentSlideNum = buffer.getIntValue("enigmatik/currentSlideNum");
+	
+	nextSlideNum = currentSlideNum + slideDirection;
+}
+
+// GLITCH EFFECTS
+void enigmatikSlideshow::glitchEffect2( int& value ){
+	// todo: void seems to be called twice for each change.
+	// compare to prev value and set timer not to overload the cpu/gpu.
+	
+	//cout << "OK = " << value << endl;
+	//int bla = buttons.cast<>(0);
+	//enigmatikPotentiometer btn2 = buttons.ofParameterGroup::get<enigmatikPotentiometer>(1);
+	solved2 = 1 - param2.getDistFromTarget();
+	cout << "Solved = " << solved2 << endl;
+	
+	// load glitch data into pixels
+	ofPixels* glitchData2Ref = &glitchData2.getPixelsRef();
+	int numChannels = glitchData2Ref->getNumChannels();
+	
+	for( unsigned int i=0; i < glitchData2.width*glitchData2.height; i++ ){
+		int x = i%glitchData2Ref->getWidth();
+		int y = ceil( i/glitchData2Ref->getWidth() );
+		ofColor p = glitchData2Ref->getColor(x,y);
+		//tmp.set();
+		// apply effect to this pixel ?
+		if(glitchZones2[i] > 0){
+			glitchData2Ref->setColor(i, ofColor( (int)(glitchZones2[i]*255), p.g, p.b, 1) ); //0=red channel
+			//glitch
+		}
+		else glitchData2Ref->setColor(i, ofColor(0, p.g, p.b, p.a) ); //0=red channel
+		
+		//if(true || sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f) curPixels[i] = nextPixels[i];
+		//else mixedPixelsRef[i] = nextPixels[i];
+	}
+	
+	//glitchData2.setFromPixels(*glitchData2Ref);
+	glitchData2.update();
+	
+	// triggers a new rendering
+	reRenderOutput = true;
+	
+	//cout << "enigmatikSlideshow::glitchEffect2 : update done" << endl;
+	
+}
+
+// function that resets/randomises 
+void enigmatikSlideshow::resetEffects(){
+	// randomize button targets
+	param2.randomizeTarget();
+	// etc.
+	// etc.
+	
+	// ask for new frame
+	reRenderOutput = true;
+	
+	// randomize glitch applyal zones
+	glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
+	int numPixels = currentSlide.width * currentSlide.height;
+	glitchZones2.resize(numPixels);
+	for(int i=0; i<numPixels;i++){
+		// todo: make this "identifiable" zones (rects?) unstead of full random.
+		glitchZones2[i] = ( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+	}
+}
+
+
+// PRIVATE FUNCTIONS
 
 void enigmatikSlideshow::newImageLoaded(string &_img){
 	// get corresponding image
@@ -240,10 +452,11 @@ void enigmatikSlideshow::resizeImageToScreen(ofImage &_img){
 bool enigmatikSlideshow::cacheCurrentSlides(){
 	if(imageFiles.size()<1) return false;
 	
-	if( currentSlideNum < 0 || currentSlideNum > imageFiles.size() ) return false;
+	if( currentSlideNum < 0 || currentSlideNum >= imageFiles.size() ) return false;
 	
 	// update menu item indicator
-	currentSlideNum.setName("Current slide: ("+ofToString(currentSlideNum+1)+"/" + ofToString(numSlides) + ")");
+	currentSlideNum.setName("Current slide: "+ofToString(currentSlideNum+1)+" of " + ofToString(numSlides));
+	gui.ofxPanel::setPosition(gui.ofxPanel::getPosition()); // dirty hack to force gui to re-render text (wich just got changed)
 	
 	bool ret = true;
 	
@@ -269,13 +482,11 @@ bool enigmatikSlideshow::cacheCurrentSlides(){
 	resizeImageToScreen(nextSlide);
 #endif
 	
-	
-	
 	return ret;
 }
 
 // return an int within slide numbers
-// -1 when there re no slides
+// -1 when there are no slides
 int enigmatikSlideshow::getRealSlideNum(int _num){
 	if(_num<0) _num *= -1*(numSlides-1);
 	

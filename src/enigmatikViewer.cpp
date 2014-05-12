@@ -4,6 +4,11 @@
 void enigmatikViewer::setup(){
 	//ofSetLogLevel(OF_LOG_VERBOSE);
 	
+	// some settings for optimisation
+	ofSetBackgroundAuto(false); // allows to keep same image when it doesn't change
+	ofSetVerticalSync(true); // cleaner output
+	ofxMouseAutoHider::enable();
+	
 	// initialise slideshow
 	slider.setup();
 	slider.setFolder("slideshowImages");
@@ -11,12 +16,14 @@ void enigmatikViewer::setup(){
 	
 	// add event controls
 	
+	
 }
 
 //--------------------------------------------------------------
 void enigmatikViewer::update(){
-	
+
 	// get/update button states
+	
 	
 }
 

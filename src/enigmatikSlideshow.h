@@ -8,15 +8,17 @@
 
 #pragma once
 
+// uncomment to enable (untested)
+//#define USE_THREADED_IMAGE_LOADER
+
 #include "ofMain.h"
 #include "ofEvents.h"
-#include "ofParameter.h"
+//#include "ofParameter.h"
+#include "ofParameterGroup.h"
 #include "ofxGui.h"
 #include "ofxThreadedImageLoader.h"
 //#include "ofxGuiDynamicIntSlider.h"
-
-// comment to disable
-//#define USE_THREADED_IMAGE_LOADER
+#include "enigmatikParam.h"
 
 class enigmatikSlideshow {
 
@@ -42,6 +44,21 @@ public:
 	void loadPrevSlide();
 	void enableControls();
 	
+	bool rememberSlideNum(int & useless);
+	bool loadSlideNum();
+	
+	// glitch params
+	enigmatikButton param1;
+	enigmatikPotentiometer param2;
+	enigmatikRotaryEncoder param3;
+	enigmatikThreePosSwitch param4;
+	enigmatikPushButton param5;
+	
+	// glitch effects
+	void glitchEffect2(int& value);
+	float solved2;
+	void resetEffects();
+	
 private:
 	void newImageLoaded(string &_img);
 	void resizeImageToScreen(ofImage &_img);
@@ -49,10 +66,20 @@ private:
 	int getRealSlideNum(int _num);
 	int slideDirection = 1;
 	vector<string> imageFiles;
-	ofImage currentSlide, nextSlide; // static for multithreading ?
+	ofImage currentSlide, nextSlide, mixedSlide; // static for multithreading ?
+	//ofFbo mixedSlide;
+	
 	string imagesFolder;
 	int numSlides;
 	bool showControls = false;
+	
+	// glitch stuff
+	ofShader sGlitch2;
+	ofPlanePrimitive slideGrid;
+	ofImage glitchData2; // data texture
+	
+	vector<float> glitchZones2;
+	
 	
 	ofxPanel gui;
 	ofxButton nextButton, prevButton;
@@ -60,5 +87,8 @@ private:
 #ifdef USE_THREADED_IMAGE_LOADER
 	ofxThreadedImageLoader imgLoader;
 #endif
-
+	
+	ofParameterGroup buttons;
+	ofxPanel buttonGui;
+	bool reRenderOutput;
 };

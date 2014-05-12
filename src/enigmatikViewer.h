@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "ofEvents.h"
 #include "enigmatikSlideshow.h"
+#include "ofxMouseAutoHider.h"
 
 class enigmatikViewer : public ofBaseApp{
 
