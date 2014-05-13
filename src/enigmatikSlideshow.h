@@ -56,7 +56,7 @@ public:
 	
 	// glitch effects
 	void glitchEffect2(int& value);
-	float solved2;
+	float solved2, lastSolved2;
 	void resetEffects();
 	
 private:

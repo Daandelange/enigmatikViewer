@@ -368,6 +368,8 @@ void enigmatikSlideshow::glitchEffect2( int& value ){
 	//int bla = buttons.cast<>(0);
 	//enigmatikPotentiometer btn2 = buttons.ofParameterGroup::get<enigmatikPotentiometer>(1);
 	solved2 = 1 - param2.getDistFromTarget();
+	if(solved2 == lastSolved2) return;
+	else lastSolved2 = solved2;
 	cout << "Solved = " << solved2 << endl;
 	
 	// load glitch data into pixels
