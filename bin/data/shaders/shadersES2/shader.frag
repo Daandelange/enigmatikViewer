@@ -37,7 +37,7 @@ void main()
 	
 	if( intensity > solved2 ) outputColor = vec4( texture2D(tex0, texCoordVarying ).rgb, 1);//vec4( texture(glitchData2, texCoordVarying ).r ,0,0,1);//texture(tex0, texCoordVarying) * (1-solved2) + texture(nextSlide1, texCoordVarying) * solved2;
 	else outputColor = vec4(0,0,0,0);//texture(tex0, texCoordVarying);
-	//outputColor = vec4( texture(glitchData2, gl_FragCoord.xy ).b, 0, 0, 1); // dunno why, but r and b are reversed in glitchData2
+	outputColor = vec4( texture(glitchData2, gl_FragCoord.xy ).rgb, 1); // dunno why, but r and b are reversed in glitchData2
 
 	// sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f)
 	gl_FragColor = outputColor;

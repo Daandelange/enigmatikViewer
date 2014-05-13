@@ -7,6 +7,8 @@ void enigmatikViewer::setup(){
 	// some settings for optimisation
 	ofSetBackgroundAuto(false); // allows to keep same image when it doesn't change
 	ofSetVerticalSync(true); // cleaner output
+	ofDisableAntiAliasing();
+	ofDisableDepthTest();s
 	ofxMouseAutoHider::enable();
 	
 	// initialise slideshow
