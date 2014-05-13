@@ -1,3 +1,4 @@
 ofxGui
 ofxThreadedImageLoader
 ofxXmlSettings
+ofxMouseAutoHider
