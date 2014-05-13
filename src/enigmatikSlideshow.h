@@ -64,14 +64,14 @@ private:
 	void resizeImageToScreen(ofImage &_img);
 	bool cacheCurrentSlides();
 	int getRealSlideNum(int _num);
-	int slideDirection = 1;
+	int slideDirection;
 	vector<string> imageFiles;
 	ofImage currentSlide, nextSlide, mixedSlide; // static for multithreading ?
 	//ofFbo mixedSlide;
 	
 	string imagesFolder;
 	int numSlides;
-	bool showControls = false;
+	bool showControls;
 	
 	// glitch stuff
 	ofShader sGlitch2;

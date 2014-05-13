@@ -7,6 +7,7 @@
 #include <stdint.h>
 #include <unistd.h>
 #include <iostream>
+#include <ctime>
 
 template <class CBClass>
 class wiringPiCppInterrupt {
@@ -15,7 +16,7 @@ public:
 	
 	typedef void (CBClass::*wpInterval)(int, bool);
 	
-	~re_decoder(){
+	~wiringPiCppInterrupt(){
 		initialized = false;
 	
 		// unregister interupt events
@@ -41,7 +42,7 @@ public:
 	}
 	
 	static void updateStatic(int pin, void* userdata){
-		((re_decoder<CBClass>*)userdata)->update(pin, digitalRead(pin) );
+		( (wiringPiCppInterrupt<CBClass> *)userdata)-> update(pin, digitalRead(pin) );
 	}
 
 	bool lastState; // caches the last pin state
@@ -68,9 +69,10 @@ private:
 		// protect by time delay ?
 		double duration;
 		duration = ( std::clock() - lastStateChange ) / (double) CLOCKS_PER_SEC;
-		if( minimumDelay > 0 && duration < minimumDelay ) return;
-
+		
 		lastState = boolState;
+		
+		if( minimumDelay > 0 && duration < minimumDelay ) return;
 	
 		else (cb_instance->*callback)(pin, boolState);
 	}

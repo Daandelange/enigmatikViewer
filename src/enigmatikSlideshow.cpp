@@ -24,8 +24,10 @@ void enigmatikSlideshow::setup() {
 	
 	// todo: load currentSlideNum from xml settings
 	currentSlideNum = 0;
-	nextSlideNum = currentSlideNum + slideDirection; // -1 = none;
+	nextSlideNum = currentSlideNum + slideDirection;
 	imagesFolder = "slideshowImages";
+	showControls = true;
+	slideDirection = 0;
 	
 	// shader stuff
 #ifdef TARGET_OPENGLES
