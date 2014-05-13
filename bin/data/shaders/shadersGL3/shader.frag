@@ -23,13 +23,20 @@ in vec2 texCoordVarying;
 // uniform sampler2DRect myMask;
 
 out vec4 outputColor; // final pixel color
- 
+
+float intensity; 
+
 void main()
 {
+	intensity = texture(glitchData2, gl_FragCoord.xy ).b;
+
 	// currentSlide0*glitchData2.r
 	//outputColor = vec4( texture(tex0, texCoordVarying).rgb, texture(glitchData2, texCoordVarying).r );
-	outputColor = vec4( texture(glitchData2, texCoordVarying ).r, 0, 0, 1 );
-	//if( texture(glitchData2, gl_PointCoord.xy ).r != 0 ) outputColor = vec4( texture(glitchData2, texCoordVarying ).r ,0,0,1);//texture(tex0, texCoordVarying) * (1-solved2) + texture(nextSlide1, texCoordVarying) * solved2;
+	//outputColor = vec4( texture(glitchData2, texCoordVarying ).r, 0, 0, 1 );
+	
+	if( intensity > solved2 ) outputColor = vec4( texture(tex0, texCoordVarying ).rgb, 1);//vec4( texture(glitchData2, texCoordVarying ).r ,0,0,1);//texture(tex0, texCoordVarying) * (1-solved2) + texture(nextSlide1, texCoordVarying) * solved2;
+	else outputColor = vec4(0,0,0,0);//texture(tex0, texCoordVarying);
+	//outputColor = vec4( texture(glitchData2, gl_FragCoord.xy ).b, 0, 0, 1); // dunno why, but r and b are reversed in glitchData2
 
-	//else outputColor = vec4(255,0,0,1);//texture(tex0, texCoordVarying);
+	// sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f)
 }

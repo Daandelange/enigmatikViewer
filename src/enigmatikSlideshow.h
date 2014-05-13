@@ -80,7 +80,6 @@ private:
 	
 	vector<float> glitchZones2;
 	
-	
 	ofxPanel gui;
 	ofxButton nextButton, prevButton;
 	ofxIntSlider currentSlideNum, nextSlideNum;

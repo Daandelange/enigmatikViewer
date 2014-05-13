@@ -206,6 +206,7 @@ float enigmatikPotentiometer::getDistFromTarget(){
 	else ret=ofMap(ret-tolerance,-tolerance,1-tolerance,0,1);
 	
 	if(ret<0) ret=0;
+	if(ret>1) ret=1-(ret-1);
 	
 	return ret;
 }

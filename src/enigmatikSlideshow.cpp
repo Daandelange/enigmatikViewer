@@ -373,22 +373,19 @@ void enigmatikSlideshow::glitchEffect2( int& value ){
 	int numChannels = glitchData2Ref->getNumChannels();
 	
 	for( unsigned int i=0; i < glitchData2.width*glitchData2.height; i++ ){
-		int x = i%glitchData2Ref->getWidth();
-		int y = ceil( i/glitchData2Ref->getWidth() );
+		int x = i % (int)glitchData2.getWidth();
+		int y = floor( i / (int)glitchData2.getWidth() );
 		ofColor p = glitchData2Ref->getColor(x,y);
-		//tmp.set();
+		
 		// apply effect to this pixel ?
 		if(glitchZones2[i] > 0){
-			glitchData2Ref->setColor(i, ofColor( (int)(glitchZones2[i]*255), p.g, p.b, 1) ); //0=red channel
-			//glitch
+			glitchData2Ref->setColor(x, y, ofColor((int)(glitchZones2[i]*255),0,0,255) );//p.g, p.b, 1) ); //0=red channel
 		}
-		else glitchData2Ref->setColor(i, ofColor(0, p.g, p.b, p.a) ); //0=red channel
+		else glitchData2Ref->setColor(x, y, ofColor( 0, 255, 0, 255));//p.g, p.b, p.a) ); //0=red channel
 		
-		//if(true || sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f) curPixels[i] = nextPixels[i];
-		//else mixedPixelsRef[i] = nextPixels[i];
 	}
 	
-	//glitchData2.setFromPixels(*glitchData2Ref);
+	glitchData2.setFromPixels(*glitchData2Ref);
 	glitchData2.update();
 	
 	// triggers a new rendering
@@ -412,9 +409,36 @@ void enigmatikSlideshow::resetEffects(){
 	glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
 	int numPixels = currentSlide.width * currentSlide.height;
 	glitchZones2.resize(numPixels);
-	for(int i=0; i<numPixels;i++){
+	/*for(int i=0; i<numPixels;i++){
 		// todo: make this "identifiable" zones (rects?) unstead of full random.
 		glitchZones2[i] = ( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+	}*/
+	// empty
+	for(int i=0; i<numPixels;i++) glitchZones2[i] = 0;
+	
+	// generate zones
+	int numZones = 160;
+	for(int z=0; z<numZones;z++){
+		int centerPixel = (int) ofRandom(0, numPixels);
+		int centerX = centerPixel % currentSlide.width;
+		int centerY = ceil(centerPixel / currentSlide.width);
+		int gWidth = ofRandom(20,120);
+		int gHeight = ofRandom(8,20);
+		
+		// restrain x to workspace
+		int x=centerX-gWidth/2;
+		if(x<0) x=0;
+		
+		for(; x<centerX+gWidth/2 && x<currentSlide.width; x++){
+			int y=centerY-gHeight/2;
+			if(y<0) y=0;
+			
+			for(; y<centerY+gHeight/2 && y<currentSlide.height; y++ ){
+				glitchZones2[(x+y*currentSlide.width)] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+			}
+			
+		}
+		
 	}
 }
 

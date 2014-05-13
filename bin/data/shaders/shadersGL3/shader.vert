@@ -4,10 +4,13 @@
 // by default from OpenFrameworks
 uniform mat4 modelViewProjectionMatrix;
 
+uniform sampler2DRect glitchData2;
+
 in vec4 position;
 in vec2 texcoord;
 // in vec4 normal
 // in vec4 color
+uniform float solved2;
 
 // already defined
 //in int gl_VertexID; // vertex ID
@@ -30,11 +33,16 @@ void main()
     #endif
 
     // here we move the texture coordinates
-    texCoordVarying = vec2(texcoord.x, texcoord.y);//position.x, position.y);
+    texCoordVarying = vec2(texcoord.x + (1-solved2)*50*cos(position.x), texcoord.y + (1-solved2)*50*sin(position.y) );// nice
+    gl_Position = modelViewProjectionMatrix * position;
+
+	//texCoordVarying = vec2(texcoord.x + (1-solved2)*50, texcoord.y + 50*(1-solved2) );
+	//texCoordVarying = position.xy + vec2( sin(gl_Position.y)*50, cos(gl_Position.x) *50);
+    //gl_Position = modelViewProjectionMatrix * position;
 
     // send the vertices to the fragment shader
-	gl_Position = modelViewProjectionMatrix * position;
+	//gl_Position = modelViewProjectionMatrix * position;
 
 	// simply get color from other pixels
-	
+
 }
