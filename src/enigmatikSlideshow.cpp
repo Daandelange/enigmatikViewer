@@ -192,7 +192,7 @@ void enigmatikSlideshow::draw() {
 	
 	// tmp
 	ofSetColor(255);
-	glitchData2.draw(-ofGetWidth()/2, -ofGetHeight()/2, ofGetWidth()/3, ofGetHeight()/3 );
+	//glitchData2.draw(-ofGetWidth()/2, -ofGetHeight()/2, ofGetWidth()/3, ofGetHeight()/3 );
 	
 	t.unbind();
 	currentSlide.unbind();
@@ -491,6 +491,19 @@ void enigmatikSlideshow::glitchEffect3( int& value ){
 	else lastParam3Solved = param3Solved;
 	
 	cout << "param3Solved = " << param3Solved << endl;
+	
+	// triggers a new rendering
+	reRenderOutput = true;
+	
+}
+
+void enigmatikSlideshow::glitchEffect6( int& value ){
+	param6Solved = 1 - param6.getDistFromTarget();
+	
+	if(param6Solved == lastParam6Solved) return;
+	else lastParam3Solved = param6Solved;
+	
+	cout << "param6Solved = " << param6Solved << endl;
 	
 	// triggers a new rendering
 	reRenderOutput = true;
