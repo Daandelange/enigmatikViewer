@@ -237,6 +237,21 @@ int enigmatikRotaryEncoder::getRandomPossibleValue(){
 }
 
 float enigmatikRotaryEncoder::getDistFromTarget(){
-	return ofMap( abs(targetValue - this->cast<int>() ), 0, (getMax()-getMin())/2, 0.0f, 1.0f ); // tockeck
+	// return ofMap( abs(targetValue - this->cast<int>() ), 0, (getMax()-getMin())/2, 0.0f, 1.0f );
+	
+	int maxDist = (getMax()-getMin())/2; // loops so farthest away is
+	int dist = abs(targetValue - this->cast<int>() );
+	
+	float ret = ofMap(dist, 0, maxDist, 0, 1);
+	
+	// snap on target ?
+	float tolerance = .02f;
+	if(ret<tolerance) ret=0;
+	else ret=ofMap(ret-tolerance,-tolerance,1-tolerance,0,1);
+	
+	if(ret<0) ret=0;
+	if(ret>1) ret=1-(ret-1);
+	
+	return ret;
 }
 

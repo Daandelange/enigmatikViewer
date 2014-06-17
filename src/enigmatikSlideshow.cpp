@@ -87,25 +87,32 @@ void enigmatikSlideshow::setup() {
 	buttons.setName("Button States");
 	
 	// name virtual buttons/controls/parameters
-	param2.setName("param2");
+	param2.setName("param2 (pot.rot)");
+	param3.setName("param3 (rot.enc)");
+	//param4.setName("param4 (3.pos)");
+	param6.setName("param6 (pot.slide)");
 	
 #ifdef USE_RPI_GPIO
-	// link virtual buttons to physical buttons
+	// todo: link virtual buttons to physical buttons
 	
 #endif
 	
 	// add them to a gui group
 	buttons.add( param1 );
-	buttons.add( param5 );
 	buttons.add( param2 );
 	buttons.add( param3 );
 	buttons.add( param4 );
+	buttons.add( param5 );
+	buttons.add( param6 );
 	//
 	gui.add(buttons);
 	
 	// bind button parameters to glitches
 	param2.addListener(this, &enigmatikSlideshow::glitchEffect2);
+	param3.addListener(this, &enigmatikSlideshow::glitchEffect3);
+	param6.addListener(this, &enigmatikSlideshow::glitchEffect6);
 	
+	// render output image
 	reRenderOutput=true;
 }
 
@@ -119,16 +126,28 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 	// no need to get button state, using interrupts :) (callbacks)
 	
 	// generate mixed image
-	if(true){ // todo: only regen if buttons' state changed
+	//if(true){ // todo: only regen if buttons' state changed
 		//mixedSlide = currentSlide;// tmp
-	}
+	//}
 	
 	// call the virtual (over-writeable) function
 	update();
+	
+	// temp: reload shader on demand
+	if( ofGetKeyPressed('r') ){
+		sGlitch2.load("shaders/shadersES2/shader");
+		ofLogNotice("enigmatikSlideshow::_update()") << "Shader Reloaded";
+	}
 }
 
 
 void enigmatikSlideshow::draw() {
+	
+	if( !sGlitch2.isLoaded() ){
+		ofLogWarning("enigmatikSlideshow::draw() --> shader not loaded or linked");
+		return;
+	}
+	
 	ofPushMatrix();
 	ofPushStyle();
 	ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
@@ -138,7 +157,9 @@ void enigmatikSlideshow::draw() {
 	
 	sGlitch2.begin();
 	// upload variables to shader
-	sGlitch2.setUniform1f("solved2", solved2);
+	sGlitch2.setUniform1f("param2Solved", param2Solved);
+	sGlitch2.setUniform1f("param3Solved", param3Solved);
+	sGlitch2.setUniform1f("param6Solved", param6Solved);
 	sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
 	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
 	ofTexture t;
@@ -146,7 +167,21 @@ void enigmatikSlideshow::draw() {
 	t.loadData(glitchData2);
 	t.allocate(glitchData2);
 	t.bind();
+	
+	// transmit data to shader
 	sGlitch2.setUniformTexture("glitchData2", t, 2);//t.getTextureData().textureID );
+	
+	sGlitch2.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
+	sGlitch2.setUniform1f("timeValY", -ofGetElapsedTimef() * 0.18 );
+	
+	sGlitch2.setUniform3f("iResolution", ofGetWidth(), ofGetHeight(), 0);
+	sGlitch2.setUniform4f("iMouse", ofGetMouseX(), ofGetMouseY(), 0, 0 );
+	sGlitch2.setUniform1f("iGlobalTime", ofGetElapsedTimef());
+	sGlitch2.setUniform2f("resolution", ofGetWidth(), ofGetHeight() );
+	sGlitch2.setUniform2f("textureResolution", currentSlide.width, currentSlide.height );
+	sGlitch2.setUniform2f("shapeCenterOffset", 0, 0 );// pShape->getCenterOffsetFromBoundingBox().x, pShape->getCenterOffsetFromBoundingBox().y);
+	sGlitch2.setUniform1f("textureScale", 1);
+	//sGlitch2.setUniform1i("tex", 0);
 	
 	currentSlide.getTextureReference().bind();
 	slideGrid.draw();
@@ -167,6 +202,7 @@ void enigmatikSlideshow::draw() {
 	ofPopStyle();
 	ofPopMatrix();
 }
+
 void enigmatikSlideshow::_draw(ofEventArgs &e){
 	// here you can force actions (draw() is virtual)
 	
@@ -359,7 +395,56 @@ bool enigmatikSlideshow::loadSlideNum(){
 	nextSlideNum = currentSlideNum + slideDirection;
 }
 
+// function that resets/randomizes 
+void enigmatikSlideshow::resetEffects(){
+	// randomize button targets
+	param2.randomizeTarget();
+	// etc.
+	// etc.
+	
+	// ask for new frame
+	reRenderOutput = true;
+	
+	// randomize glitch applyal zones
+	glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
+	int numPixels = currentSlide.width * currentSlide.height;
+	glitchZones2.resize(numPixels);
+	/*for(int i=0; i<numPixels;i++){
+	 // todo: make this "identifiable" zones (rects?) unstead of full random.
+	 glitchZones2[i] = ( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+	 }*/
+	// empty
+	for(int i=0; i<numPixels;i++) glitchZones2[i] = 0;
+	
+	// generate zones
+	int numZones = 160;
+	for(int z=0; z<numZones;z++){
+		int centerPixel = (int) ofRandom(0, numPixels);
+		int centerX = centerPixel % currentSlide.width;
+		int centerY = ceil(centerPixel / currentSlide.width);
+		int gWidth = ofRandom(20,120);
+		int gHeight = ofRandom(8,20);
+		
+		// restrain x to workspace
+		int x=centerX-gWidth/2;
+		if(x<0) x=0;
+		
+		for(; x<centerX+gWidth/2 && x<currentSlide.width; x++){
+			int y=centerY-gHeight/2;
+			if(y<0) y=0;
+			
+			for(; y<centerY+gHeight/2 && y<currentSlide.height; y++ ){
+				glitchZones2[(x+y*currentSlide.width)] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+			}
+			
+		}
+		
+	}
+}
+
 // GLITCH EFFECTS
+
+// GLITCH #2 : enigmatikPotentiometer
 void enigmatikSlideshow::glitchEffect2( int& value ){
 	// todo: void seems to be called twice for each change.
 	// compare to prev value and set timer not to overload the cpu/gpu.
@@ -367,10 +452,10 @@ void enigmatikSlideshow::glitchEffect2( int& value ){
 	//cout << "OK = " << value << endl;
 	//int bla = buttons.cast<>(0);
 	//enigmatikPotentiometer btn2 = buttons.ofParameterGroup::get<enigmatikPotentiometer>(1);
-	solved2 = 1 - param2.getDistFromTarget();
-	if(solved2 == lastSolved2) return;
-	else lastSolved2 = solved2;
-	cout << "Solved = " << solved2 << endl;
+	param2Solved = 1 - param2.getDistFromTarget();
+	if(param2Solved == lastParam2Solved) return;
+	else lastParam2Solved = param2Solved;
+	cout << "param2Solved = " << param2Solved << endl;
 	
 	// load glitch data into pixels
 	ofPixels* glitchData2Ref = &glitchData2.getPixelsRef();
@@ -399,51 +484,17 @@ void enigmatikSlideshow::glitchEffect2( int& value ){
 	
 }
 
-// function that resets/randomises 
-void enigmatikSlideshow::resetEffects(){
-	// randomize button targets
-	param2.randomizeTarget();
-	// etc.
-	// etc.
+void enigmatikSlideshow::glitchEffect3( int& value ){
+	param3Solved = 1 - param3.getDistFromTarget();
 	
-	// ask for new frame
+	if(param3Solved == lastParam3Solved) return;
+	else lastParam3Solved = param3Solved;
+	
+	cout << "param3Solved = " << param3Solved << endl;
+	
+	// triggers a new rendering
 	reRenderOutput = true;
 	
-	// randomize glitch applyal zones
-	glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
-	int numPixels = currentSlide.width * currentSlide.height;
-	glitchZones2.resize(numPixels);
-	/*for(int i=0; i<numPixels;i++){
-		// todo: make this "identifiable" zones (rects?) unstead of full random.
-		glitchZones2[i] = ( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
-	}*/
-	// empty
-	for(int i=0; i<numPixels;i++) glitchZones2[i] = 0;
-	
-	// generate zones
-	int numZones = 160;
-	for(int z=0; z<numZones;z++){
-		int centerPixel = (int) ofRandom(0, numPixels);
-		int centerX = centerPixel % currentSlide.width;
-		int centerY = ceil(centerPixel / currentSlide.width);
-		int gWidth = ofRandom(20,120);
-		int gHeight = ofRandom(8,20);
-		
-		// restrain x to workspace
-		int x=centerX-gWidth/2;
-		if(x<0) x=0;
-		
-		for(; x<centerX+gWidth/2 && x<currentSlide.width; x++){
-			int y=centerY-gHeight/2;
-			if(y<0) y=0;
-			
-			for(; y<centerY+gHeight/2 && y<currentSlide.height; y++ ){
-				glitchZones2[(x+y*currentSlide.width)] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
-			}
-			
-		}
-		
-	}
 }
 
 

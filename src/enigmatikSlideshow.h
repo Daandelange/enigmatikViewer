@@ -46,6 +46,7 @@ public:
 	
 	bool rememberSlideNum(int & useless);
 	bool loadSlideNum();
+	void resetEffects();
 	
 	// glitch params
 	enigmatikButton param1;
@@ -53,11 +54,18 @@ public:
 	enigmatikRotaryEncoder param3;
 	enigmatikThreePosSwitch param4;
 	enigmatikPushButton param5;
+	enigmatikPotentiometer param6;
 	
-	// glitch effects
+	// GLITCH EFFECTS
 	void glitchEffect2(int& value);
-	float solved2, lastSolved2;
-	void resetEffects();
+	float param2Solved, lastParam2Solved;
+	
+	
+	void glitchEffect3(int& value);
+	float param3Solved, lastParam3Solved;
+	
+	void glitchEffect6(int& value);
+	float param6Solved, lastParam6Solved;
 	
 private:
 	void newImageLoaded(string &_img);
