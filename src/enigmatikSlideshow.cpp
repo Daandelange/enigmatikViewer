@@ -73,7 +73,7 @@ void enigmatikSlideshow::setup() {
 	// 10 pixels per grid square
 	slideGrid.setResolution( ceil(ofGetWidth()/10), ceil(ofGetHeight()/10) );
 	slideGrid.setMode(OF_PRIMITIVE_TRIANGLES);
-	slideGrid.mapTexCoordsFromTexture(currentSlide.getTexture());
+	slideGrid.mapTexCoordsFromTexture(currentSlide.getTextureReference());
 	
 	// bind events for quitting
 	ofAddListener(ofEvents().update, this, &enigmatikSlideshow::_update);
@@ -169,7 +169,7 @@ void enigmatikSlideshow::draw() {
 	sGlitch2.setUniform1f("param2Solved", param2Solved);
 	sGlitch2.setUniform1f("param3Solved", param3Solved);
 	sGlitch2.setUniform1f("param6Solved", param6Solved);
-	sGlitch2.setUniformTexture("tex0", currentSlide.getTexture(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
+	sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
 	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTexture(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
 	ofTexture t;
 	t.allocate(glitchData2);
@@ -193,9 +193,9 @@ void enigmatikSlideshow::draw() {
 	sGlitch2.setUniform1f("textureScale", 1);
 	//sGlitch2.setUniform1i("tex", 0);
 	
-	currentSlide.getTexture().bind();
+	currentSlide.getTextureReference().bind();
 	slideGrid.draw();
-	currentSlide.getTexture().unbind();
+	currentSlide.getTextureReference().unbind();
 	
 	//slideGrid.drawWireframe();
 	sGlitch2.end();
@@ -289,7 +289,7 @@ bool enigmatikSlideshow::setFolder(string _path){
 // not a temporary insertion
 bool enigmatikSlideshow::addImage(string _img){
 	ofImage _tmp;
-	if( !_tmp.load(_img) ){
+	if( !_tmp.loadImage(_img) ){
 		ofLogNotice("enigmatikSlideshow::addImage() --> " + _img + " could not be loaded. Please check your image path.");
 		return false;
 	}
@@ -300,7 +300,7 @@ bool enigmatikSlideshow::addImage(string _img){
 // saves file relative
 // to improve: secure it so you can't provide a path.
 bool enigmatikSlideshow::addImage(ofImage* _img, string _fileName){
-	_img->save( _fileName );
+	_img->saveImage( _fileName );
 	return true; // saveImage() has no return value...
 }
 
@@ -404,6 +404,8 @@ bool enigmatikSlideshow::loadSlideNum(){
 	else currentSlideNum = buffer.getIntValue("enigmatik/currentSlideNum");
 	
 	nextSlideNum = currentSlideNum + slideDirection;
+	
+	return true;
 }
 
 // function that resets/randomizes 
