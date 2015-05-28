@@ -2,7 +2,6 @@
 
 //--------------------------------------------------------------
 void enigmatikViewer::setup(){
-	//ofSetLogLevel(OF_LOG_VERBOSE);
 	
 	// some settings for optimisation
 	ofSetBackgroundAuto(false); // allows to keep same image when it doesn't change

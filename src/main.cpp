@@ -6,21 +6,24 @@
 #include "enigmatikViewer.h"
 
 #ifdef USE_RPI_GPIO
+#ifdef TARGET_OPENGLES
+#include "ofGLProgrammableRenderer.h"
+#endif
 #include "ofAppEGLWindow.h"
 #else
-#include "ofAppGLFWWindow.h"
-#endif
-
-// to use GL ES
+//#include "ofAppGLFWWindow.h"
 #include "ofGLProgrammableRenderer.h"
-
+#endif
 
 
 //========================================================================
 int main( ){
-	
 
+	ofSetLogLevel(OF_LOG_VERBOSE);
+	
 #ifdef USE_RPI_GPIO
+	ofLogVerbose("enigmatikViewer") << "Running in rpi mode using OPENGL " << glGetString(GL_VERSION) << endl;
+	// useful for later? http://ofxfenster.undef.ch/doc/structofAppEGLWindow_1_1Settings.html
 	ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer() );
 	renderer->setBackgroundAuto(false);
 	renderer->disableAntiAliasing();
@@ -35,10 +38,27 @@ int main( ){
 	ofSetupOpenGL(&window, 800,600, OF_WINDOW);
 	// car rearview screen resolution: 320*240
 #else
-	ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
-	ofSetupOpenGL(800,600, OF_WINDOW);// <-------- setup the GL context
+	
+	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
+	//ofAppGLFWWindow window;
+	//ofSetupOpenGL(&window, 800,600, OF_WINDOW);// <-------- setup the GL context
+	
+	//ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer(OF_WINDOW) );
+	//renderer->setBackgroundAuto(false);
+	//renderer->disableAntiAliasing();
+	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
+	
+	ofGLWindowSettings s;
+	s.setGLVersion(3,2);
+	//s.setGLVersion(4,3);
+	ofCreateWindow(s);
+	
+	ofLogVerbose("enigmatikViewer") << "Running in desktop mode using OPENGL " << glGetString(GL_VERSION) << endl;
 #endif
-
+	
+	ofSetVerticalSync(false);
+	ofEnableAlphaBlending();
+	
 	ofRunApp(new enigmatikViewer());
 
 }

@@ -27,34 +27,41 @@ void enigmatikSlideshow::setup() {
 	nextSlideNum = currentSlideNum + slideDirection;
 	imagesFolder = "slideshowImages";
 	showControls = true;
-	slideDirection = 0;
+	slideDirection = 1; // 1 or -1
 	
 	// shader stuff
 #ifdef TARGET_OPENGLES
+	ofLogVerbose("enigmatikSlideshow", "setup(): Loading GLES2 shader.");
 	sGlitch2.load("shaders/shadersES2/shader");
 #else
 	if(ofIsGLProgrammableRenderer()){
+		ofLogVerbose("enigmatikSlideshow", "setup(): Loading GL3 shader.");
 		sGlitch2.load("shaders/shadersGL3/shader");
 	}else{
+		ofLogVerbose("enigmatikSlideshow", "setup(): Loading GL2 shader.");
 		sGlitch2.load("shaders/shadersGL2/shader");
 	}
 #endif
+	//ofLogVerbose("enigmatikSlideshow", "setup(): Loading ???? shader.");
+	//sGlitch2.load("shaders_GLES/shader");
 	
 	// setup GUI
 	gui.setup("Slide Show Control", "slideShowSettings.xml");
 	gui.add( prevButton.setup("<-- PREV SLIDE") );
-	gui.add( currentSlideNum.setup("Current slide", 0, 0, 0) );
+	gui.add( currentSlideNum.setup("Current slide", 0, 20, 0) );
 	//currentSlideNum.unregisterMouseEvents(); not working
 	gui.add( nextButton.setup("--> NEXT SLIDE") );
 	
-	// load last used settings
+	// load last used settings from save file
 	//gui.loadFromFile("slideShowSettings.xml");
 	loadSlideNum();
 	
 	// load images folder
 	reloadFolderContent();
 	
-	// cache current & next Slides
+	// setup & cache current & next Slides
+    currentSlide = *new ofImage();
+    nextSlide = *new ofImage();
 	cacheCurrentSlides();
 	
 	// init effects and button states
@@ -66,7 +73,7 @@ void enigmatikSlideshow::setup() {
 	// 10 pixels per grid square
 	slideGrid.setResolution( ceil(ofGetWidth()/10), ceil(ofGetHeight()/10) );
 	slideGrid.setMode(OF_PRIMITIVE_TRIANGLES);
-	slideGrid.mapTexCoordsFromTexture(currentSlide.getTextureReference());
+	slideGrid.mapTexCoordsFromTexture(currentSlide.getTexture());
 	
 	// bind events for quitting
 	ofAddListener(ofEvents().update, this, &enigmatikSlideshow::_update);
@@ -135,8 +142,10 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 	
 	// temp: reload shader on demand
 	if( ofGetKeyPressed('r') ){
+		ofLogNotice("enigmatikSlideshow::_update()") << "Reloading shaders...";
 		sGlitch2.load("shaders/shadersES2/shader");
-		ofLogNotice("enigmatikSlideshow::_update()") << "Shader Reloaded";
+		//sGlitch2.load("shaders/shadersGL3/shader");
+		
 	}
 }
 
@@ -160,8 +169,8 @@ void enigmatikSlideshow::draw() {
 	sGlitch2.setUniform1f("param2Solved", param2Solved);
 	sGlitch2.setUniform1f("param3Solved", param3Solved);
 	sGlitch2.setUniform1f("param6Solved", param6Solved);
-	sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
-	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
+	sGlitch2.setUniformTexture("tex0", currentSlide.getTexture(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
+	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTexture(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
 	ofTexture t;
 	t.allocate(glitchData2);
 	t.loadData(glitchData2);
@@ -174,6 +183,7 @@ void enigmatikSlideshow::draw() {
 	sGlitch2.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
 	sGlitch2.setUniform1f("timeValY", -ofGetElapsedTimef() * 0.18 );
 	
+	// add shadertoy sandbox variables ( tmp?)
 	sGlitch2.setUniform3f("iResolution", ofGetWidth(), ofGetHeight(), 0);
 	sGlitch2.setUniform4f("iMouse", ofGetMouseX(), ofGetMouseY(), 0, 0 );
 	sGlitch2.setUniform1f("iGlobalTime", ofGetElapsedTimef());
@@ -183,9 +193,9 @@ void enigmatikSlideshow::draw() {
 	sGlitch2.setUniform1f("textureScale", 1);
 	//sGlitch2.setUniform1i("tex", 0);
 	
-	currentSlide.getTextureReference().bind();
+	currentSlide.getTexture().bind();
 	slideGrid.draw();
-	currentSlide.getTextureReference().unbind();
+	currentSlide.getTexture().unbind();
 	
 	//slideGrid.drawWireframe();
 	sGlitch2.end();
@@ -279,7 +289,7 @@ bool enigmatikSlideshow::setFolder(string _path){
 // not a temporary insertion
 bool enigmatikSlideshow::addImage(string _img){
 	ofImage _tmp;
-	if( !_tmp.loadImage(_img) ){
+	if( !_tmp.load(_img) ){
 		ofLogNotice("enigmatikSlideshow::addImage() --> " + _img + " could not be loaded. Please check your image path.");
 		return false;
 	}
@@ -290,7 +300,7 @@ bool enigmatikSlideshow::addImage(string _img){
 // saves file relative
 // to improve: secure it so you can't provide a path.
 bool enigmatikSlideshow::addImage(ofImage* _img, string _fileName){
-	_img->saveImage( _fileName );
+	_img->save( _fileName );
 	return true; // saveImage() has no return value...
 }
 
@@ -331,9 +341,10 @@ void enigmatikSlideshow::reloadFolderContent(){
 	// url: http://forum.openframeworks.cc/t/dynamic-range-in-ofxslider-ofxgui/15424
 	// might help: http://forum.openframeworks.cc/t/controlling-a-parameters-from-ofxgui-and-some-kb-shortcut/15171/4
 	//currentSlideNum.setup(currentSlideNum.getName(), (int)currentSlideNum, 0, numSlides-1); // alternative --> fucks up GUI drawing
-	ofParameter<int> tmp;
-	tmp = currentSlideNum;
-	tmp.setMax( numSlides-1 );
+	
+    //ofParameter<int> tmp;
+	//tmp = currentSlideNum;
+	//tmp.setMax( numSlides-1 );
 	
 	imageFiles.resize( numSlides );
 	for(int i = 0; i < dir.numFiles(); i++){
@@ -399,47 +410,50 @@ bool enigmatikSlideshow::loadSlideNum(){
 void enigmatikSlideshow::resetEffects(){
 	// randomize button targets
 	param2.randomizeTarget();
+	param3.randomizeTarget();
+	param6.randomizeTarget();
 	// etc.
 	// etc.
+	
+	// randomize glitch zone 2
+	{
+		glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
+		int numPixels = currentSlide.width * currentSlide.height;
+		glitchZones2.resize(numPixels);
+		/*for(int i=0; i<numPixels;i++){
+		 // todo: make this "identifiable" zones (rects?) unstead of full random.
+		 glitchZones2[i] = ( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+		 }*/
+		// empty
+		for(int i=0; i<numPixels;i++) glitchZones2[i] = 0;
+		
+		// generate zones
+		int numZones = 160;
+		for(int z=0; z<numZones;z++){
+			int centerPixel = (int) ofRandom(0, numPixels);
+			int centerX = centerPixel % currentSlide.width;
+			int centerY = ceil(centerPixel / currentSlide.width);
+			int gWidth = ofRandom(20,120);
+			int gHeight = ofRandom(8,20);
+			
+			// restrain x to workspace
+			int x=centerX-gWidth/2;
+			if(x<0) x=0;
+			
+			for(; x<centerX+gWidth/2 && x<currentSlide.width; x++){
+				int y=centerY-gHeight/2;
+				if(y<0) y=0;
+				
+				for(; y<centerY+gHeight/2 && y<currentSlide.height; y++ ){
+					glitchZones2[(x+y*currentSlide.width)] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+				}
+				
+			}
+		}
+	} // end glitch zone 2
 	
 	// ask for new frame
 	reRenderOutput = true;
-	
-	// randomize glitch applyal zones
-	glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
-	int numPixels = currentSlide.width * currentSlide.height;
-	glitchZones2.resize(numPixels);
-	/*for(int i=0; i<numPixels;i++){
-	 // todo: make this "identifiable" zones (rects?) unstead of full random.
-	 glitchZones2[i] = ( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
-	 }*/
-	// empty
-	for(int i=0; i<numPixels;i++) glitchZones2[i] = 0;
-	
-	// generate zones
-	int numZones = 160;
-	for(int z=0; z<numZones;z++){
-		int centerPixel = (int) ofRandom(0, numPixels);
-		int centerX = centerPixel % currentSlide.width;
-		int centerY = ceil(centerPixel / currentSlide.width);
-		int gWidth = ofRandom(20,120);
-		int gHeight = ofRandom(8,20);
-		
-		// restrain x to workspace
-		int x=centerX-gWidth/2;
-		if(x<0) x=0;
-		
-		for(; x<centerX+gWidth/2 && x<currentSlide.width; x++){
-			int y=centerY-gHeight/2;
-			if(y<0) y=0;
-			
-			for(; y<centerY+gHeight/2 && y<currentSlide.height; y++ ){
-				glitchZones2[(x+y*currentSlide.width)] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
-			}
-			
-		}
-		
-	}
 }
 
 // GLITCH EFFECTS
@@ -456,26 +470,6 @@ void enigmatikSlideshow::glitchEffect2( int& value ){
 	if(param2Solved == lastParam2Solved) return;
 	else lastParam2Solved = param2Solved;
 	cout << "param2Solved = " << param2Solved << endl;
-	
-	// load glitch data into pixels
-	ofPixels* glitchData2Ref = &glitchData2.getPixelsRef();
-	int numChannels = glitchData2Ref->getNumChannels();
-	
-	for( unsigned int i=0; i < glitchData2.width*glitchData2.height; i++ ){
-		int x = i % (int)glitchData2.getWidth();
-		int y = floor( i / (int)glitchData2.getWidth() );
-		ofColor p = glitchData2Ref->getColor(x,y);
-		
-		// apply effect to this pixel ?
-		if(glitchZones2[i] > 0){
-			glitchData2Ref->setColor(x, y, ofColor((int)(glitchZones2[i]*255),0,0,255) );//p.g, p.b, 1) ); //0=red channel
-		}
-		else glitchData2Ref->setColor(x, y, ofColor( 0, 255, 0, 255));//p.g, p.b, p.a) ); //0=red channel
-		
-	}
-	
-	glitchData2.setFromPixels(*glitchData2Ref);
-	glitchData2.update();
 	
 	// triggers a new rendering
 	reRenderOutput = true;
@@ -501,7 +495,7 @@ void enigmatikSlideshow::glitchEffect6( int& value ){
 	param6Solved = 1 - param6.getDistFromTarget();
 	
 	if(param6Solved == lastParam6Solved) return;
-	else lastParam3Solved = param6Solved;
+	else lastParam6Solved = param6Solved;
 	
 	cout << "param6Solved = " << param6Solved << endl;
 	
@@ -537,7 +531,11 @@ void enigmatikSlideshow::newImageLoaded(string &_img){
 
 void enigmatikSlideshow::resizeImageToScreen(ofImage &_img){
 	// todo: respect image proportions / don't stretch
+	//ofPixelsRef& pix = _img.getPixelsRef();
+	//cout << "Colorspace before resize: " << _img.getPixelsRef().pixelFormat << endl;
 	_img.resize(ofGetWidth(), ofGetHeight());
+	ofPixelsRef& pix = _img.getPixels();
+	
 }
 
 // loads current slides in ofImage variable
@@ -559,19 +557,24 @@ bool enigmatikSlideshow::cacheCurrentSlides(){
 	
 	imgLoader.loadFromDisk( currentSlide, imagesFolder +"/"+ imageFiles[currentSlideNum]);
 #else
-	ret *= currentSlide.loadImage( imagesFolder +"/"+ imageFiles[currentSlideNum] );
+    // tmp
+    string test = imagesFolder +"/"+ imageFiles[currentSlideNum];
+    
+    // dirty hack. images can (atm) only be in graaysale or rgb, not bgr
+    // [or not]
+    ret *= currentSlide.load( test);//imagesFolder +"/"+ imageFiles[currentSlideNum] );
 	
-	resizeImageToScreen(currentSlide);
+	if(ret) resizeImageToScreen(currentSlide);
 #endif
 	
-	
+	// load next image ?
 	if( nextSlideNum < 0 || nextSlideNum >imageFiles.size() ) return false;
 
 #ifdef USE_THREADED_IMAGE_LOADER
 	imgLoader.loadFromDisk( nextSlide, imagesFolder +"/"+ imageFiles[nextSlideNum]);
 #else
-	ret *= nextSlide.loadImage( imagesFolder +"/"+ imageFiles[nextSlideNum] );
-	resizeImageToScreen(nextSlide);
+	ret *= nextSlide.load( imagesFolder +"/"+ imageFiles[nextSlideNum] );
+	if(ret) resizeImageToScreen(nextSlide);
 #endif
 	
 	return ret;

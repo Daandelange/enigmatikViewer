@@ -28,7 +28,8 @@ void main()
 
     // apply effect 2
     // here we move the texture coordinates
-    vertexTexCoord = vec2(texcoord.x + (1-param2Solved)*50*cos(position.x+(param2Solved-1)*30 ) , texcoord.y + (1-param2Solved)*50*sin(position.y+(param2Solved-1)*30 ) );// nice
+    //vertexTexCoord = vec2(texcoord.x + (1-param2Solved)*50*cos(position.x+(param2Solved-1)*30 ) , texcoord.y + (1-param2Solved)*50*sin(position.y+(param2Solved-1)*30 ) );// nice
+    vertexTexCoord = vec2(texcoord.x, texcoord.y );
     gl_Position = modelViewProjectionMatrix * position;
 
     // effect 3 doesn't apply on vertex shader
