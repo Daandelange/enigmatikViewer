@@ -536,7 +536,7 @@ void enigmatikSlideshow::resizeImageToScreen(ofImage &_img){
 	//ofPixelsRef& pix = _img.getPixelsRef();
 	//cout << "Colorspace before resize: " << _img.getPixelsRef().pixelFormat << endl;
 	_img.resize(ofGetWidth(), ofGetHeight());
-	ofPixelsRef& pix = _img.getPixelsRef()();
+	ofPixelsRef& pix = _img.getPixelsRef();
 	
 }
 
