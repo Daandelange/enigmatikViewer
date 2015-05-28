@@ -564,7 +564,7 @@ bool enigmatikSlideshow::cacheCurrentSlides(){
     
     // dirty hack. images can (atm) only be in graaysale or rgb, not bgr
     // [or not]
-    ret *= currentSlide.load( test);//imagesFolder +"/"+ imageFiles[currentSlideNum] );
+    ret *= currentSlide.loadImage( test);//imagesFolder +"/"+ imageFiles[currentSlideNum] );
 	
 	if(ret) resizeImageToScreen(currentSlide);
 #endif
@@ -575,7 +575,7 @@ bool enigmatikSlideshow::cacheCurrentSlides(){
 #ifdef USE_THREADED_IMAGE_LOADER
 	imgLoader.loadFromDisk( nextSlide, imagesFolder +"/"+ imageFiles[nextSlideNum]);
 #else
-	ret *= nextSlide.load( imagesFolder +"/"+ imageFiles[nextSlideNum] );
+	ret *= nextSlide.loadImage( imagesFolder +"/"+ imageFiles[nextSlideNum] );
 	if(ret) resizeImageToScreen(nextSlide);
 #endif
 	
