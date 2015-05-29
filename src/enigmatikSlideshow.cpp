@@ -170,7 +170,7 @@ void enigmatikSlideshow::draw() {
 	sGlitch2.setUniform1f("param3Solved", param3Solved);
 	sGlitch2.setUniform1f("param6Solved", param6Solved);
 	sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
-	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTexture(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
+	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
 	ofTexture t;
 	t.allocate(glitchData2);
 	t.loadData(glitchData2);
@@ -536,7 +536,7 @@ void enigmatikSlideshow::resizeImageToScreen(ofImage &_img){
 	//ofPixelsRef& pix = _img.getPixelsRef();
 	//cout << "Colorspace before resize: " << _img.getPixelsRef().pixelFormat << endl;
 	_img.resize(ofGetWidth(), ofGetHeight());
-	ofPixelsRef& pix = _img.getPixelsRef();
+	//ofPixelsRef& pix = _img.getPixelsRef();
 	
 }
 

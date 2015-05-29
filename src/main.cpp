@@ -24,19 +24,25 @@ int main( ){
 #ifdef USE_RPI_GPIO
 	ofLogVerbose("enigmatikViewer") << "Running in rpi mode using OPENGL " << glGetString(GL_VERSION) << endl;
 	// useful for later? http://ofxfenster.undef.ch/doc/structofAppEGLWindow_1_1Settings.html
-	ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer() );
-	renderer->setBackgroundAuto(false);
-	renderer->disableAntiAliasing();
-	ofSetCurrentRenderer(renderer);
+	//ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer() );
+	//renderer->setBackgroundAuto(false);
+	//renderer->disableAntiAliasing();
+	//ofSetCurrentRenderer(renderer);
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 	
-	ofAppEGLWindow::Settings settings;
+	//ofAppEGLWindow::Settings settings;
 	//settings.eglWindowOpacity = 127;
-    settings.frameBufferAttributes[EGL_DEPTH_SIZE]   = 0; // 0 bits for depth
-    settings.frameBufferAttributes[EGL_STENCIL_SIZE] = 0; // 0 bits for stencil
-	ofAppEGLWindow window(settings);
-	ofSetupOpenGL(&window, 800,600, OF_WINDOW);
+    //settings.frameBufferAttributes[EGL_DEPTH_SIZE]   = 0; // 0 bits for depth
+    //settings.frameBufferAttributes[EGL_STENCIL_SIZE] = 0; // 0 bits for stencil
+	//ofAppEGLWindow window(settings);
+	//ofSetupOpenGL(&window, 800,600, OF_WINDOW);
 	// car rearview screen resolution: 320*240
+	
+	ofGLESWindowSettings settings;
+	settings.width = 1280;
+	settings.height = 720;
+	settings.setGLESVersion(2);
+	ofCreateWindow(settings);
 #else
 	
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
