@@ -511,7 +511,7 @@ void enigmatikSlideshow::glitchEffect6( int& value ){
 
 void enigmatikSlideshow::newImageLoaded(string &_img){
 	// get corresponding image
-	int imgIndex = 0;
+	unsigned int imgIndex = 0;
 	bool found = false;
 	while( imgIndex < imageFiles.size() ){
 		if(imagesFolder+"/"+imageFiles[imgIndex] == _img){
@@ -520,9 +520,9 @@ void enigmatikSlideshow::newImageLoaded(string &_img){
 		}
 		imgIndex++;
 	}
-	int bla=imageFiles.size();
+	unsigned int bla=imageFiles.size();
 	if(!found){
-		ofLogVerbose("enigmatikSlideshow::newImageLoaded - Image was loaded, but already unloaded from stage.");
+		ofLogVerbose("enigmatikSlideshow::newImageLoaded - Image was loaded, but already loaded on stage.");
 		return;
 	}
 	
@@ -542,9 +542,9 @@ void enigmatikSlideshow::resizeImageToScreen(ofImage &_img){
 
 // loads current slides in ofImage variable
 bool enigmatikSlideshow::cacheCurrentSlides(){
-	if(imageFiles.size()<1) return false;
+	if(imageFiles.size() < (unsigned int)1) return false;
 	
-	if( currentSlideNum < 0 || currentSlideNum >= imageFiles.size() ) return false;
+	if( currentSlideNum < 0 || (unsigned int)currentSlideNum >= imageFiles.size() ) return false;
 	
 	// update menu item indicator
 	currentSlideNum.setName("Current slide: "+ofToString(currentSlideNum+1)+" of " + ofToString(numSlides));
