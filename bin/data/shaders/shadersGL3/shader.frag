@@ -1,9 +1,5 @@
 #version 330
 
-#ifdef GL_ES
-precision highp float;
-#endif
-
 // todo:
 // // randomly generated sampler2dRect per slide // to use for effect variations over time/usage (or other)
 

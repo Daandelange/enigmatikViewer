@@ -1,17 +1,20 @@
 #version 330
 
-// useful for convertion GLSL to GLSL ES
-// http://stackoverflow.com/questions/19783173/difference-between-opengl-sl-and-opengl-es-2-0-sl
+// these variables are all set by OF
+uniform mat4 projectionMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 modelViewProjectionMatrix;
 
-uniform mat4 modelViewProjectionMatrix; // This is provide by openFrameworks
-in vec2 texcoord; // This is provided by openFrameworks
+// these are too
+in vec2 texcoord;
 in vec4 position;
-out vec2 vertexTexCoord; // modified vertex coord
+in vec4 normal;
+in vec4 color;
+
+out vec2 vertexTexCoord; // modified vertex coord to fragment shader
 
 //uniform sampler2DRect glitchData2;
 
-in vec4 normal;
-in vec4 color;
 uniform float param2Solved;
 uniform float param3Solved;
 uniform float param4Solved;
@@ -31,7 +34,7 @@ void main()
     //gl_Position = modelViewProjectionMatrix * position;
 
     // apply effect 2
-    // here we move the texture coordinates
+    // here we simply move the texture coordinates
     vertexTexCoord = vec2(texcoord.x + (1-param2Solved)*50*cos(position.x+(param2Solved-1)*30 ) , texcoord.y + (1-param2Solved)*50*sin(position.y+(param2Solved-1)*30 ) );// nice
     vertexTexCoord = vec2(texcoord.x, texcoord.y );
     gl_Position = modelViewProjectionMatrix * position;
