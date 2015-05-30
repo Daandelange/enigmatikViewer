@@ -31,7 +31,7 @@ varying vec2 vertexTexCoord;
 //	return _a1 % _a2;
 //}
 
-void mainImage()
+void main()
 {
     vec4 color = gl_FragColor;
 	vec4 outputColor;
