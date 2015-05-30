@@ -22,7 +22,7 @@
 void enigmatikSlideshow::setup() {
 	fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	fbo.begin();
-	ofClear(0);
+	ofClear(0,0,0,1);
 	ofClearAlpha();
 	fbo.end();
 	
@@ -125,6 +125,9 @@ void enigmatikSlideshow::setup() {
 	
 	// render output image
 	reRenderOutput=true;
+	
+	// for Rpi this (may?) needs to be defined here
+	ofSetBackgroundAuto(false);
 }
 
 
@@ -223,19 +226,28 @@ void enigmatikSlideshow::draw() {
 
 void enigmatikSlideshow::_draw(ofEventArgs &e){
 	// here you can force actions (draw() is virtual)
+	//ofSetColor(0,0,255,1);
+	//ofDrawRectangle(0,0,ofGetWidth(), ofGetHeight());
+	//ofClear(0);
 	
 	// prevents CPU overload
 	if(!reRenderOutput){
+		//ofLogVerbose("enigmatikSlideshow::_draw") << "Not re-rendering" << endl;
+		
 		//update glitch images
 		
 		// show GUI elements
 		if(showControls) gui.draw();
-		
+
+#ifdef USE_RPI_GPIO
 		// saves battery
 		ofSleepMillis(50);
-		
+#endif
+
 		return;
 	}
+	
+	ofLogVerbose("enigmatikSlideshow::_draw") << "Rendering a new image" << endl;
 	
 	draw();
 	
@@ -244,8 +256,10 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 	
 	reRenderOutput = false;
 	
+#ifdef USE_RPI_GPIO
 	// saves battery
 	ofSleepMillis(50);
+#endif
 	
 	return;
 }

@@ -65,8 +65,8 @@ int main( ){
 	
 	ofSetVerticalSync(false);
 	ofEnableAlphaBlending();
-	ofSetBackgroundColor(ofColor(0,0,0,0));
-	ofSetBackgroundAuto(false);
+	//ofSetBackgroundColor(0);//ofColor(255,255,255,255));
+	ofSetBackgroundAuto(false); // tmp
 	
 	ofRunApp(new enigmatikViewer());
 

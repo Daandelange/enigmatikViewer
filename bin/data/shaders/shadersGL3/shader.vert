@@ -2,7 +2,7 @@
 
 // these variables are all set by OF
 uniform mat4 projectionMatrix;
-uniform mat4 projectionMatrix;
+uniform mat4 modelViewMatrix;
 uniform mat4 modelViewProjectionMatrix;
 
 // these are too
