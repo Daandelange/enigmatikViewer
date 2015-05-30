@@ -1,7 +1,7 @@
 
-uniform mat4 modelViewProjectionMatrix; // This is provide by openFrameworks
-uniform vec2 texcoord; // This is provided by openFrameworks
-uniform vec4 position;
+attribute mat4 modelViewProjectionMatrix; // This is provide by openFrameworks
+attribute vec2 texcoord; // This is provided by openFrameworks
+attribute vec4 position;
 varying vec2 vertexTexCoord; // modified vertex coord
 
 uniform sampler2D glitchData2;
