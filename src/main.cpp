@@ -1,6 +1,6 @@
 // uncomment to compile on RPI and activate
 // also add -Wiringpi to compiler settings ( // todo: )
-//#define USE_RPI_GPIO
+#define USE_RPI_GPIO
 
 #include "ofMain.h"
 #include "enigmatikViewer.h"
@@ -28,21 +28,22 @@ int main( ){
 	//renderer->setBackgroundAuto(false);
 	//renderer->disableAntiAliasing();
 	//ofSetCurrentRenderer(renderer);
+	ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 	
 	//ofAppEGLWindow::Settings settings;
 	//settings.eglWindowOpacity = 127;
-    //settings.frameBufferAttributes[EGL_DEPTH_SIZE]   = 0; // 0 bits for depth
-    //settings.frameBufferAttributes[EGL_STENCIL_SIZE] = 0; // 0 bits for stencil
+	//settings.frameBufferAttributes[EGL_DEPTH_SIZE]   = 0; // 0 bits for depth
+	//settings.frameBufferAttributes[EGL_STENCIL_SIZE] = 0; // 0 bits for stencil
 	//ofAppEGLWindow window(settings);
-	//ofSetupOpenGL(&window, 800,600, OF_WINDOW);
+	ofSetupOpenGL( 800,600, OF_WINDOW);
 	// car rearview screen resolution: 320*240
 	
-	ofGLESWindowSettings settings;
-	settings.width = 1280;
-	settings.height = 720;
-	settings.setGLESVersion(2);
-	ofCreateWindow(settings);
+	//ofGLESWindowSettings settings;
+	//settings.width = 1280;
+	//settings.height = 720;
+	//settings.setGLESVersion(2);
+	//ofCreateWindow(settings);
 #else
 	
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);

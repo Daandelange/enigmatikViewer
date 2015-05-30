@@ -36,7 +36,7 @@ void enigmatikSlideshow::setup() {
 #else
 	if(ofIsGLProgrammableRenderer()){
 		ofLogVerbose("enigmatikSlideshow", "setup(): Loading GL3 shader.");
-		sGlitch2.load("shaders/shadersGL3/shader");
+		sGlitch2.load("shaders/shadersGL3/shader.minimal");
 	}else{
 		ofLogVerbose("enigmatikSlideshow", "setup(): Loading GL2 shader.");
 		sGlitch2.load("shaders/shadersGL2/shader");
