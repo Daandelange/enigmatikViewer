@@ -1,4 +1,3 @@
-#version 330
 
 #ifdef GL_ES
 precision highp float;
@@ -26,13 +25,14 @@ uniform float textureScale;
 // uniform vec4 myPosition;
 // uniform sampler2DRect myMask;
 
-in vec2 vertexTexCoord;
-in vec4 gl_FragCoord;
+varying vec2 vertexTexCoord;
+varying vec4 gl_FragCoord;
 
-out vec4 outputColor;
+//out vec4 outputColor;
 
 void main()
 {
+	vec4 outputColor;
 	//outputColor = vec4( texture(tex0, gl_FragCoord.xy/resolution.xy ).rgb, 1);
 	
 	// apply glitch effect 1
@@ -76,7 +76,7 @@ void main()
 	outputColor = vec4( texture(glitchData2, gl_FragCoord.xy ).rgb, 1); // dunno why, but r and b are reversed in glitchData2
 
 	// tmp
-	// sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f)
-	gl_FragColor = outputColor; // */
+	// sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f) // */
+	gl_FragColor = outputColor;
 }
 
