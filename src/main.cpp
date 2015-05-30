@@ -24,11 +24,11 @@ int main( ){
 #ifdef USE_RPI_GPIO
 	ofLogVerbose("enigmatikViewer") << "Running in rpi mode using OPENGL " << glGetString(GL_VERSION) << endl;
 	// useful for later? http://ofxfenster.undef.ch/doc/structofAppEGLWindow_1_1Settings.html
-	//ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer() );
-	//renderer->setBackgroundAuto(false);
+	ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer() );
+	renderer->setBackgroundAuto(false);
 	//renderer->disableAntiAliasing();
-	//ofSetCurrentRenderer(renderer);
-	ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
+	ofSetCurrentRenderer(renderer);
+	//ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 	
 	//ofAppEGLWindow::Settings settings;

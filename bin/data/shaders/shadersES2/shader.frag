@@ -23,6 +23,7 @@ uniform float textureScale;
 // uniform sampler2DRect myMask;
 
 varying vec2 vertexTexCoord;
+uniform vec4 color;
 //varying vec4 gl_FragCoord;
 
 //out vec4 outputColor;
@@ -64,7 +65,7 @@ void main()
 	// tmp
 	//outputColor = vec4(1,0,0,1);
 	//gl_FragColor = outputColor;
-	gl_FragColor = vec4( color.rgb, 1.0 ); 
+	// --- gl_FragColor = vec4( color.rgb, 1.0 ); 
 
 	/*float intensity;
 	//intensity = texture2D(glitchData2, gl_FragCoord.xy ).b;
