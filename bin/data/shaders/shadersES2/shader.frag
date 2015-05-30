@@ -79,5 +79,5 @@ void main()
 
 	// tmp
 	// sin((ceil(i/numChannels)*.0f)/100)+sin((ceil(i/numChannels)*.0f)/100) > 1.0f) // */
-	gl_FragColor = outputColor;
+	gl_FragColor = vec4(1.0,0.0,0.0,1.0);//outputColor;
 }
