@@ -15,6 +15,7 @@ uniform sampler2D glitchData2;
 uniform float param2Solved;
 uniform float param3Solved;
 uniform float param4Solved;
+uniform float param6Solved;
 
 void main()
 {
@@ -34,7 +35,7 @@ void main()
     // effect 3 doesn't apply on vertex shader
 
     // apply effect 4
-    vertexCoord += vec2( (1-param4Solved)*30*sin( position.x+position.y/10 ), (1-param4Solved)*30*cos( position.y+position.y/10 ) );
+    vertexTexCoord += vec2( (1.-param6Solved)*30.*sin( position.x+position.y/10. ), (1.-param6Solved)*30.*cos( position.y+position.y/10. ) );
 
     //
     //texCoordVarying = vec2(texcoord.x + (1-param2Solved)*50, texcoord.y + 50*(1-param2Solved) );
