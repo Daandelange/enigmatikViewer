@@ -236,6 +236,12 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 		
 		//update glitch images
 		
+#ifdef USE_RPI_GPIO
+		bool tmp = ofGetBackgroundAuto();
+		if(tmp==true) ofLogVerbose("enigmatikSlideshow::_draw") << "Renderer can't be set not to refresh buffer... :'( ";
+		if( fbo.isAllocated() ) fbo.draw();
+#endif
+		
 		// show GUI elements
 		if(showControls) gui.draw();
 
@@ -247,7 +253,7 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 		return;
 	}
 	
-	ofLogVerbose("enigmatikSlideshow::_draw") << "Rendering a new image" << endl;
+	ofLogVerbose("enigmatikSlideshow::_draw") << "Rendering a new image";
 	
 	draw();
 	
