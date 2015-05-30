@@ -64,13 +64,9 @@ void main()
 	}// */
 
 	// apply glitch effect 3
-
 	float pixelBrightness;
 	pixelBrightness = getBrightness( texture2D(tex0, texturePixelPosition ).rgb );
 	float effectIntensity = getBrightness( texture2D(glitchData2, vertexTexCoord ).rgb);
-
-	// solved indicator (for debugging)
-	if(param2Solved == 1.0 && param3Solved ==1.0 ) outputColor.g += 0.15;
 
 	if( pixelBrightness > param2Solved ){
 		//outputColor += texture(tex0, vertexTexCoord) * (1-param2Solved) + texture(nextSlide1, vertexTexCoord) * param2Solved;

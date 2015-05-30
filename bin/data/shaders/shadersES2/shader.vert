@@ -5,7 +5,8 @@ attribute vec4 normal;          // set automatically by OF
 attribute vec2 texcoord;        // set automatically by OF 
 
 uniform mat4 modelViewMatrix;   // set automatically by OF 
-uniform mat4 projectionMatrix;  // set automatically by OF 
+uniform mat4 projectionMatrix;  // set automatically by OF
+uniform mat4 modelViewProjectionMatrix;
 
 varying vec2 vertexTexCoord; // modified vertex coord send to frag shader
 
