@@ -4,7 +4,7 @@ uniform vec2 texcoord; // This is provided by openFrameworks
 uniform vec4 position;
 varying vec2 vertexTexCoord; // modified vertex coord
 
-uniform sampler2DRect glitchData2;
+uniform sampler2D glitchData2;
 
 // in vec4 normal;
 // in vec4 color;
