@@ -98,4 +98,6 @@ private:
 	ofParameterGroup buttons;
 	ofxPanel buttonGui;
 	bool reRenderOutput;
+	
+	ofFbo fbo;
 };

@@ -20,7 +20,11 @@
 // MARK: Init
 
 void enigmatikSlideshow::setup() {
-	
+	fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
+	fbo.begin();
+	ofClear(0);
+	ofClearAlpha();
+	fbo.end();
 	
 	// todo: load currentSlideNum from xml settings
 	currentSlideNum = 0;
@@ -157,6 +161,7 @@ void enigmatikSlideshow::draw() {
 		return;
 	}
 	
+	fbo.begin();
 	ofPushMatrix();
 	ofPushStyle();
 	ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
@@ -211,6 +216,9 @@ void enigmatikSlideshow::draw() {
 	ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
 	ofPopStyle();
 	ofPopMatrix();
+	
+	fbo.end();
+	fbo.draw(0,0);
 }
 
 void enigmatikSlideshow::_draw(ofEventArgs &e){

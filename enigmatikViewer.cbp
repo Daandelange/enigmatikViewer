@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="enigmatikViewer" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Option virtualFolders="addons/;src/;build config/;" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/$(PROJECT_NAME)_debug" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
+				<Option object_output="obj/Debug/" />
+				<Option external_deps="../../../libs/openFrameworksCompiled/lib/linuxarmv6l/libopenFrameworksDebug.a;" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+			</Target>
+			<Target title="Release">
+				<Option output="bin/$(PROJECT_NAME)" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="bin" />
+				<Option object_output="obj/Release/" />
+				<Option external_deps="../../../libs/openFrameworksCompiled/lib/linuxarmv6l/libopenFrameworks.a;" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Option projectLinkerOptionsRelation="2" />
+			</Target>
+		</Build>
+		<Unit filename="config.make">
+			<Option virtualFolder="build config" />
+		</Unit>
+		<Unit filename="src/main.cpp">
+			<Option virtualFolder="src/" />
+		</Unit>
+		<Unit filename="src/ofApp.cpp">
+			<Option virtualFolder="src/" />
+		</Unit>
+		<Unit filename="src/ofApp.h">
+			<Option virtualFolder="src/" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<envvars />
+			<debugger />
+		</Extensions>
+		<Unit filename="src/enigmatikParam.cpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/enigmatikParam.h">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/enigmatikSlideshow.cpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/enigmatikSlideshow.h">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/enigmatikViewer.cpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/enigmatikViewer.h">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/rotaryencoder.cpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/rotaryencoder.hpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/wiringPiCppInterrupt.cpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="src/wiringPiCppInterrupt.hpp">
+			<Option virtualFolder="src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxBaseGui.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxBaseGui.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxButton.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxButton.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxGui.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxGuiGroup.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxGuiGroup.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxLabel.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxLabel.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxPanel.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxPanel.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxSlider.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxSlider.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxSliderGroup.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxSliderGroup.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxToggle.cpp">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxGui/src/ofxToggle.h">
+			<Option virtualFolder="addons/ofxGui/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxThreadedImageLoader/src/ofxThreadedImageLoader.cpp">
+			<Option virtualFolder="addons/ofxThreadedImageLoader/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxThreadedImageLoader/src/ofxThreadedImageLoader.h">
+			<Option virtualFolder="addons/ofxThreadedImageLoader/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxXmlSettings/src/ofxXmlSettings.cpp">
+			<Option virtualFolder="addons/ofxXmlSettings/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxXmlSettings/src/ofxXmlSettings.h">
+			<Option virtualFolder="addons/ofxXmlSettings/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxXmlSettings/libs/tinyxml.cpp">
+			<Option virtualFolder="addons/ofxXmlSettings/libs" />
+		</Unit>
+		<Unit filename="../../../addons/ofxXmlSettings/libs/tinyxml.h">
+			<Option virtualFolder="addons/ofxXmlSettings/libs" />
+		</Unit>
+		<Unit filename="../../../addons/ofxXmlSettings/libs/tinyxmlerror.cpp">
+			<Option virtualFolder="addons/ofxXmlSettings/libs" />
+		</Unit>
+		<Unit filename="../../../addons/ofxXmlSettings/libs/tinyxmlparser.cpp">
+			<Option virtualFolder="addons/ofxXmlSettings/libs" />
+		</Unit>
+		<Unit filename="../../../addons/ofxMouseAutoHider/src/ofxMouseAutoHider.cpp">
+			<Option virtualFolder="addons/ofxMouseAutoHider/src" />
+		</Unit>
+		<Unit filename="../../../addons/ofxMouseAutoHider/src/ofxMouseAutoHider.h">
+			<Option virtualFolder="addons/ofxMouseAutoHider/src" />
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

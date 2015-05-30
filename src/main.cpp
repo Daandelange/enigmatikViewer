@@ -26,7 +26,7 @@ int main( ){
 	// useful for later? http://ofxfenster.undef.ch/doc/structofAppEGLWindow_1_1Settings.html
 	ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer() );
 	renderer->setBackgroundAuto(false);
-	//renderer->disableAntiAliasing();
+	renderer->enableAntiAliasing();
 	ofSetCurrentRenderer(renderer);
 	//ofSetCurrentRenderer(ofPtr<ofBaseRenderer>(new ofGLProgrammableRenderer()));
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
@@ -65,6 +65,8 @@ int main( ){
 	
 	ofSetVerticalSync(false);
 	ofEnableAlphaBlending();
+	ofSetBackgroundColor(ofColor(0,0,0,0));
+	ofSetBackgroundAuto(false);
 	
 	ofRunApp(new enigmatikViewer());
 
