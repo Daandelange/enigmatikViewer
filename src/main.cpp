@@ -1,6 +1,7 @@
 // uncomment to compile on RPI and activate
 // also add -Wiringpi to compiler settings ( // todo: )
 //#define USE_RPI_GPIO
+//#define USE_PROGRAMMABLE_GL
 
 #include "ofMain.h"
 #include "enigmatikViewer.h"
@@ -12,6 +13,8 @@
 #include "ofAppEGLWindow.h"
 #else
 //#include "ofAppGLFWWindow.h"
+//#import <OpenGL/OpenGL.h>
+//#import <GLUT/GLUT.h>
 #include "ofGLProgrammableRenderer.h"
 #endif
 
@@ -36,11 +39,11 @@ int main( ){
 	//ofSetupOpenGL( 800,600, OF_WINDOW);
 	// car rearview screen resolution: 320*240
 	
-	ofGLESWindowSettings settings;
-	settings.width = 800;
-	settings.height = 600;
-	settings.setGLESVersion(2);
-	shared_ptr<ofAppBaseWindow> window = ofCreateWindow(settings);
+	ofGLESWindowSettings windowSettings;
+	windowSettings.width = 800;
+	windowSettings.height = 600;
+	windowSettings.setGLESVersion(2);
+	shared_ptr<ofAppBaseWindow> window = ofCreateWindow(windowSettings);
 	
 	// configure renderer
 	//shared_ptr<ofBaseRenderer> renderer = new ofGLProgrammableRenderer(window.get());
@@ -59,24 +62,44 @@ int main( ){
 	//renderer->disableAntiAliasing();
 	//ofSetCurrentRenderer(ofGLProgrammableRenderer::TYPE);
 	
-	ofGLESWindowSettings settings;
-	settings.width = 800;
-	settings.height = 600;
-	settings.setGLESVersion(2);
-	shared_ptr<ofAppBaseWindow> window = ofCreateWindow(settings);
+	#ifdef USE_PROGRAMMABLE_GL
+		// we are using the programmable gl renderer.
 	
-	// configure renderer
-	//ofPtr<ofBaseRenderer> renderer( new ofGLProgrammableRenderer(window.get() ) );
-	//renderer->setBackgroundAuto(false);
-	//renderer->enableAntiAliasing();
-	//ofSetCurrentRenderer(renderer);
+		ofGLESWindowSettings windowSettings;
+		//ofGLWindowSettings windowSettings;
+		//ofGLFWWindowSettings windowSettings;
+		windowSettings.width = 800;
+		windowSettings.height = 600;
 	
-	ofLogVerbose("enigmatikViewer") << "Running in desktop mode using OPENGL " << glGetString(GL_VERSION) << endl;
+		windowSettings.setGLESVersion(2);
+		//windowSettings.setGLVersion(3, 2);
+		shared_ptr<ofAppBaseWindow> window = ofCreateWindow(windowSettings);
+	
+		// configure renderer
+		ofGLProgrammableRenderer * renderer = new ofGLProgrammableRenderer( window.get() );
+		renderer->setBackgroundAuto(false);
+		renderer->enableAntiAliasing();
+		ofSetCurrentRenderer(shared_ptr<ofBaseRenderer>((ofBaseRenderer*) renderer));
+	
+		ofLogVerbose("enigmatikViewer") << "Running in desktop mode using PROGRAMMABLE_GL " << glGetString(GL_VERSION) << endl;
+	#else
+	
+		//ofGLESWindowSettings windowSettings;
+		ofGLWindowSettings windowSettings;
+		//ofGLFWWindowSettings windowSettings;
+		windowSettings.width = 800;
+		windowSettings.height = 600;
+	
+		windowSettings.setGLVersion(3, 2);
+		shared_ptr<ofAppBaseWindow> window = ofCreateWindow(windowSettings);
+		//ofDisableArbTex();
+	#endif
+	
 #endif
 	
 	ofSetVerticalSync(false);
-	ofEnableAlphaBlending();
-	//ofSetBackgroundColor(0);//ofColor(255,255,255,255));
+	ofEnableAlphaBlending(); // otherwise alpha channel is ignored by GL
+	ofSetBackgroundColor(0,255,255,.5f);//ofColor(255,255,255,255));
 	ofSetBackgroundAuto(false); // tmp
 	
 	shared_ptr<enigmatikViewer> mainApp(new enigmatikViewer);

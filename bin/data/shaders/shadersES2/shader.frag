@@ -94,5 +94,5 @@ void main()
 	// solved indicator (for debugging)
 	if(param2Solved == 1. && param3Solved ==1. ) outputColor.g += 0.15;
 
-	gl_FragColor = outputColor;
+	gl_FragColor = vec4(1,0,0,1);//outputColor;
 }

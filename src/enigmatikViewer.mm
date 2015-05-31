@@ -30,7 +30,9 @@ void enigmatikViewer::update(){
 
 //--------------------------------------------------------------
 void enigmatikViewer::draw(){
-	
+	ofSetColor(0,128,255,0.3);
+	ofFill();
+	ofDrawRectangle(0,0, ofGetWidth(), ofGetHeight());
 }
 
 void enigmatikViewer::exit(){

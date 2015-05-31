@@ -34,7 +34,7 @@ void enigmatikSlideshow::setup() {
 	slideDirection = 1; // 1 or -1
 	
 	// shader stuff
-#ifdef TARGET_OPENGLES
+#if defined(TARGET_OPENGLES) || defined(BLA)
 	ofLogVerbose("enigmatikSlideshow", "setup(): Loading GLES2 shader.");
 	sGlitch2.load("shaders/shadersES2/shader");
 #else
@@ -79,11 +79,6 @@ void enigmatikSlideshow::setup() {
 	slideGrid.setMode(OF_PRIMITIVE_TRIANGLES);
 	slideGrid.mapTexCoordsFromTexture(currentSlide.getTextureReference());
 	
-	// bind events for quitting
-	ofAddListener(ofEvents().update, this, &enigmatikSlideshow::_update);
-	ofAddListener(ofEvents().draw, this, &enigmatikSlideshow::_draw);
-	ofAddListener(ofEvents().exit, this, &enigmatikSlideshow::_exit);
-	
 	// bind slide-change event to XML writedown
 	currentSlideNum.addListener(this, &enigmatikSlideshow::rememberSlideNum);
 	prevButton.addListener(this, &enigmatikSlideshow::loadPrevSlide );
@@ -122,6 +117,11 @@ void enigmatikSlideshow::setup() {
 	param2.addListener(this, &enigmatikSlideshow::glitchEffect2);
 	param3.addListener(this, &enigmatikSlideshow::glitchEffect3);
 	param6.addListener(this, &enigmatikSlideshow::glitchEffect6);
+	
+	// bind events for quitting
+	ofAddListener(ofEvents().update, this, &enigmatikSlideshow::_update);
+	ofAddListener(ofEvents().draw, this, &enigmatikSlideshow::_draw);
+	ofAddListener(ofEvents().exit, this, &enigmatikSlideshow::_exit);
 	
 	// render output image
 	reRenderOutput=true;
@@ -228,7 +228,7 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 	// here you can force actions (draw() is virtual)
 	//ofSetColor(0,0,255,1);
 	//ofDrawRectangle(0,0,ofGetWidth(), ofGetHeight());
-	//ofClear(0);
+	ofClear(0);
 	
 	// prevents CPU overload
 	if(!reRenderOutput){
@@ -236,11 +236,11 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 		
 		//update glitch images
 		
-#ifdef USE_RPI_GPIO
+//#ifdef USE_RPI_GPIO
 		bool tmp = ofGetBackgroundAuto();
 		if(tmp==true) ofLogVerbose("enigmatikSlideshow::_draw") << "Renderer can't be set not to refresh buffer... :'( ";
-		if( fbo.isAllocated() ) fbo.draw();
-#endif
+		if( fbo.isAllocated() ) fbo.draw(0,0);
+//#endif
 		
 		// show GUI elements
 		if(showControls) gui.draw();
@@ -251,7 +251,7 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 #endif
 
 		return;
-	}
+	} // */
 	
 	ofLogVerbose("enigmatikSlideshow::_draw") << "Rendering a new image";
 	

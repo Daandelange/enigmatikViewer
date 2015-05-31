@@ -20,6 +20,10 @@
 // MARK: Init
 
 void enigmatikSlideshow::setup() {
+	const GLubyte * version = glGetString(GL_VERSION);
+	if(version==NULL) ofLogVerbose("enigmatikViewer") << "Unknown GL";
+	else ofLogVerbose("enigmatikViewer") << "iOS Simulator.... " << version;
+	
 	fbo.allocate(ofGetWidth(), ofGetHeight(), GL_RGBA);
 	fbo.begin();
 	ofClear(0,0,0,1);
@@ -36,7 +40,7 @@ void enigmatikSlideshow::setup() {
 	// shader stuff
 #if defined(TARGET_OPENGLES) || defined(BLA)
 	ofLogVerbose("enigmatikSlideshow", "setup(): Loading GLES2 shader.");
-	sGlitch2.load("shaders/shadersES2/shader");
+	sGlitch2.load("shaders/shadersES2/shader.minimal");
 #else
 	if(ofIsGLProgrammableRenderer()){
 		ofLogVerbose("enigmatikSlideshow", "setup(): Loading GL3 shader.");
@@ -222,6 +226,8 @@ void enigmatikSlideshow::draw() {
 	
 	fbo.end();
 	fbo.draw(0,0);
+	
+	ofPixels myImage;
 }
 
 void enigmatikSlideshow::_draw(ofEventArgs &e){
@@ -230,7 +236,7 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 	//ofDrawRectangle(0,0,ofGetWidth(), ofGetHeight());
 	//ofClear(0);
 	
-	/*/ prevents CPU overload
+	// prevents CPU overload
 	if(!reRenderOutput){
 		//ofLogVerbose("enigmatikSlideshow::_draw") << "Not re-rendering" << endl;
 		
@@ -239,7 +245,7 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 #ifdef USE_RPI_GPIO
 		bool tmp = ofGetBackgroundAuto();
 		if(tmp==true) ofLogVerbose("enigmatikSlideshow::_draw") << "Renderer can't be set not to refresh buffer... :'( ";
-		if( fbo.isAllocated() ) fbo.draw();
+		if( fbo.isAllocated() ) fbo.draw(0,0);
 #endif
 		
 		// show GUI elements
