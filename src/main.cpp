@@ -1,6 +1,6 @@
 // uncomment to compile on RPI and activate
 // also add -Wiringpi to compiler settings ( // todo: )
-//#define USE_RPI_GPIO
+#define USE_RPI_GPIO
 //#define USE_PROGRAMMABLE_GL
 
 #include "ofMain.h"

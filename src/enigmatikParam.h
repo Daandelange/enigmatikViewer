@@ -15,7 +15,7 @@
 #ifdef USE_RPI_GPIO
 	#pragma message("Setting up GPIO for compilation")
 	//#include <wiringPi> // todo:
-	#include "wiringPiCppInterrupt.cpp"
+	//#include "wiringPiCppInterrupt.cpp"
 	#include "rotaryencoder.hpp"
 #else
 	// uncomment for production (which uses physical buttons)
@@ -105,4 +105,10 @@ public:
 	void myInterrupt(int way, long total);
 	int getRandomPossibleValue();
 	float getDistFromTarget();
+	
+#ifdef USE_RPI_GPIO
+	int physicalPin2 = -1;
+	bool linkWithGPIOs(int _pin1, int _pin2);
+	re_decoder<enigmatikRotaryEncoder> rotaryEncoderInterface;
+#endif
 };

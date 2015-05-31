@@ -57,7 +57,7 @@ bool enigmatikParam<ParameterType>::linkWithGPIO(int pin){
 		this->cast<bool>() = digitalRead(pin);
 		physicalPin = pin;
 		
-		if( wiringPiISRExtended( pinA, INT_EDGE_BOTH, &updateEncoderPin, this) == -1 ){
+		if( wiringPiISRExtended( pinA, INT_EDGE_BOTH, &myInterrupt, this) == -1 ){
 			ofLogVerbose("enigmatikParam<>::linkWithGPIO") << "Failed! (pin " << pin << ")";
 			// linking failed
 			physicalPin = -1;
@@ -265,3 +265,14 @@ float enigmatikRotaryEncoder::getDistFromTarget(){
 	return ret;
 }
 
+#ifdef USE_RPI_GPIO
+bool enigmatikRotaryEncoder::linkWithGPIOs(int _pin1, int _pin2){
+	physicalPin = _pin1;
+	physicalPin2 = _pin2;
+	
+	rotaryEncoderInterface.setup(_pi1, _pin2, this, &myInterrupt);
+	// todo
+	
+	return true;
+}
+#endif

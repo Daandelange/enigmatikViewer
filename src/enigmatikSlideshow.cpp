@@ -100,6 +100,7 @@ void enigmatikSlideshow::setup() {
 	
 #ifdef USE_RPI_GPIO
 	// todo: link virtual buttons to physical buttons
+	//param3.linkWithGPIO(1,16);
 	
 #endif
 	
