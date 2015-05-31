@@ -114,9 +114,9 @@ void enigmatikSlideshow::setup() {
 	gui.add(buttons);
 	
 	// bind button parameters to glitches
-	param2.addListener(this, &enigmatikSlideshow::glitchEffect2);
-	param3.addListener(this, &enigmatikSlideshow::glitchEffect3);
-	param6.addListener(this, &enigmatikSlideshow::glitchEffect6);
+	param2.addListener(this, &enigmatikSlideshow::setParam2Solved);
+	param3.addListener(this, &enigmatikSlideshow::setParam3Solved);
+	param6.addListener(this, &enigmatikSlideshow::setParam6Solved);
 	
 	// bind events for quitting
 	ofAddListener(ofEvents().update, this, &enigmatikSlideshow::_update);
@@ -489,7 +489,7 @@ void enigmatikSlideshow::resetEffects(){
 // GLITCH EFFECTS
 
 // GLITCH #2 : enigmatikPotentiometer
-void enigmatikSlideshow::glitchEffect2( int& value ){
+void enigmatikSlideshow::setParam2Solved( int& value ){
 	// todo: void seems to be called twice for each change.
 	// compare to prev value and set timer not to overload the cpu/gpu.
 	
@@ -504,11 +504,11 @@ void enigmatikSlideshow::glitchEffect2( int& value ){
 	// triggers a new rendering
 	reRenderOutput = true;
 	
-	//cout << "enigmatikSlideshow::glitchEffect2 : update done" << endl;
+	//cout << "enigmatikSlideshow::setParam2Solved : update done" << endl;
 	
 }
 
-void enigmatikSlideshow::glitchEffect3( int& value ){
+void enigmatikSlideshow::setParam3Solved( int& value ){
 	param3Solved = 1 - param3.getDistFromTarget();
 	
 	if(param3Solved == lastParam3Solved) return;
@@ -521,7 +521,7 @@ void enigmatikSlideshow::glitchEffect3( int& value ){
 	
 }
 
-void enigmatikSlideshow::glitchEffect6( int& value ){
+void enigmatikSlideshow::setParam6Solved( int& value ){
 	param6Solved = 1 - param6.getDistFromTarget();
 	
 	if(param6Solved == lastParam6Solved) return;

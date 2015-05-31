@@ -11,14 +11,16 @@
 #include "ofMain.h"
 #include "ofParameter.h"
 
-#ifdef USE_RPI_GPIO
-//#include <wiringPi> // todo:
-#include "wiringPiCppInterrupt.cpp"
-#include "rotaryencoder.hpp"
-#endif
 
-// uncomment for production (which uses physical buttons)
-#define ENIGMATIK_USE_VIRTUAL_BUTTONS
+#ifdef USE_RPI_GPIO
+	#pragma message("Setting up GPIO for compilation")
+	//#include <wiringPi> // todo:
+	#include "wiringPiCppInterrupt.cpp"
+	#include "rotaryencoder.hpp"
+#else
+	// uncomment for production (which uses physical buttons)
+	#define ENIGMATIK_USE_VIRTUAL_BUTTONS
+#endif
 
 template<typename ParameterType>
 class enigmatikParam : public ofParameter<ParameterType> {

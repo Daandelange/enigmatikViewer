@@ -36,7 +36,7 @@ void enigmatikParam<ParameterType>::draw() {
 template<typename ParameterType>
 void enigmatikParam<ParameterType>::randomizeValue() {
 	ParameterType tmp;
-	tmp =  getRandomPossibleValue(); 
+	tmp =  getRandomPossibleValue();
 	ofParameter<ParameterType>::set(tmp);
 	//set<ParameterType>( (ParameterType) tmp );
 }
@@ -46,34 +46,40 @@ void enigmatikParam<ParameterType>::randomizeTarget() {
 	targetValue = getRandomPossibleValue();
 }
 
-
 template<typename ParameterType>
 bool enigmatikParam<ParameterType>::linkWithGPIO(int pin){
 	
-#ifdef USE_RPI_GPIO
-	// link interrupt
-	pinMode(pin, INPUT);
-	pullUpDnControl(pin, PUD_UP);
-	this->cast<bool>() = digitalRead(pin);
-	physicalPin = pin;
-	
-	if( wiringPiISRExtended( pinA, INT_EDGE_BOTH, &updateEncoderPin, this) == -1 ) return false;
-	else return true;
-#endif
+	#ifdef USE_RPI_GPIO
+		// link interrupt
+		ofLogVerbose("enigmatikParam<>::linkWithGPIO") << "Linking a param with GPIO pin " << pin << "...";
+		pinMode(pin, INPUT);
+		pullUpDnControl(pin, PUD_UP);
+		this->cast<bool>() = digitalRead(pin);
+		physicalPin = pin;
+		
+		if( wiringPiISRExtended( pinA, INT_EDGE_BOTH, &updateEncoderPin, this) == -1 ){
+			ofLogVerbose("enigmatikParam<>::linkWithGPIO") << "Failed! (pin " << pin << ")";
+			// linking failed
+			physicalPin = -1;
+			return false;
+		}
+		else return true;
+	#endif
 	
 	return false;
 }
 
 template<typename ParameterType>
 void enigmatikParam<ParameterType>::myInterrupt(int pin, bool pinState){
-#ifdef USE_RPI_GPIO
-	
-	if(pin != physicalPin) return;
-	
-	bool* value = this->cast<bool*>();
-	*value = digitalRead(physicalPin);
-	
-#endif
+	#ifdef USE_RPI_GPIO
+		ofLogVerbose("enigmatikParam<>::myInterrupt") << "GPIO pin " << pin << "/" << physicalPin << " tiggered";
+		
+		if(pin != physicalPin) return;
+		
+		bool* value = this->cast<bool*>();
+		*value = digitalRead(physicalPin);
+		
+	#endif
 	return;
 }
 
@@ -85,9 +91,10 @@ enigmatikButton::enigmatikButton(){
 	setMin(false);
 	setMax(true);
 	
-#ifdef ENIGMATIK_USE_VIRTUAL_BUTTONS
-	randomizeValue(); // simulates a button state
-#endif
+	#ifdef ENIGMATIK_USE_VIRTUAL_BUTTONS
+		randomizeValue(); // simulates a button state
+	#endif
+	
 	randomizeTarget();
 	
 }
@@ -97,17 +104,19 @@ enigmatikButton::~enigmatikButton(){
 }
 
 void enigmatikButton::myInterrupt(int pin){
-#ifdef USE_RPI_GPIO
+	#ifdef USE_RPI_GPIO
 	
-	if(pin != physicalPin) return;
+		ofLogVerbose("enigmatikParam<>::myInterrupt") << "GPIO pin " << pin << "/" << physicalPin << " tiggered";
 	
-	// pushed ?
-	if( digitalRead(physicalPin) ){
-		// revert state
-		bool* value = this->cast<bool*>();
-		*value = !*value;
-	}
-#endif
+		if(pin != physicalPin) return;
+		
+		// pushed ?
+		if( digitalRead(physicalPin) ){
+			// revert state
+			bool* value = this->cast<bool*>();
+			*value = !*value;
+		}
+	#endif
 }
 
 
@@ -230,6 +239,7 @@ enigmatikRotaryEncoder::~enigmatikRotaryEncoder(){
 
 void enigmatikRotaryEncoder::myInterrupt(int way, long total){
 	this->cast<int>() = total;
+	ofLogVerbose("enigmatikRotaryEncoder::myInterrupt") << "way=" << way << " - total=" << total;
 }
 
 int enigmatikRotaryEncoder::getRandomPossibleValue(){

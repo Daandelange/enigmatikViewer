@@ -57,14 +57,14 @@ public:
 	enigmatikPotentiometer param6;
 	
 	// GLITCH EFFECTS
-	void glitchEffect2(int& value);
+	void setParam2Solved(int& value);
 	float param2Solved, lastParam2Solved;
 	
 	
-	void glitchEffect3(int& value);
+	void setParam3Solved(int& value);
 	float param3Solved, lastParam3Solved;
 	
-	void glitchEffect6(int& value);
+	void setParam6Solved(int& value);
 	float param6Solved, lastParam6Solved;
 	
 private:
