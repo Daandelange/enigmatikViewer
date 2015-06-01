@@ -267,11 +267,15 @@ float enigmatikRotaryEncoder::getDistFromTarget(){
 
 #ifdef USE_RPI_GPIO
 bool enigmatikRotaryEncoder::linkWithGPIOs(int _pin1, int _pin2){
+	
+	ofLogVerbose("enigmatikParam<>::linkWithGPIO") << "Linking a param with GPIO pins " << _pin1 << " and" << _pin2 << "...";
+	
 	physicalPin = _pin1;
 	physicalPin2 = _pin2;
 	
 	rotaryEncoderInterface.setup(_pi1, _pin2, this, &myInterrupt);
-	// todo
+	
+	ofLogVerbose("enigmatikParam<>::linkWithGPIO") << "Done for " << _pin1 << " and" << _pin2 << "...";
 	
 	return true;
 }
