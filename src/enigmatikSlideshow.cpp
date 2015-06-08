@@ -16,6 +16,7 @@
 // todo: slider button-based transition system
 
 #include "enigmatikSlideshow.h"
+#include <algorithm>// needed for std::vector::find
 
 // MARK: Init
 
@@ -101,7 +102,12 @@ void enigmatikSlideshow::setup() {
 #ifdef USE_RPI_GPIO
 	// todo: link virtual buttons to physical buttons
 	//param3.linkWithGPIO(1,16);
-	
+
+#else
+	// bind keyboard shortcuts to control the effects
+	pressedKeys.clear(); // tmp
+	ofAddListener(ofEvents().keyPressed, this, &enigmatikSlideshow::enigmaKeyPressed);
+	ofAddListener(ofEvents().keyReleased, this, &enigmatikSlideshow::enigmaKeyReleased);
 #endif
 	
 	// add them to a gui group
@@ -153,6 +159,45 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		ofLogNotice("enigmatikSlideshow::_update()") << "Reloading shaders...";
 		sGlitch2.load("shaders/shadersES2/shader");
 		//sGlitch2.load("shaders/shadersGL3/shader");
+		
+	}
+	
+	// handle pressed keys
+	if(pressedKeys.size()>0) for(map<int,keyState>::iterator it=pressedKeys.begin(); it != pressedKeys.end(); /*nothing*/ ){
+		// update value velocity
+		if(it->second.isPressed == true){
+			cout << it->second.keyArg << endl;
+			it->second.keyArg += 0.05f;
+			if(it->second.keyArg > 1.f) it->second.keyArg=1.f; // max out value
+		}
+		else{
+			it->second.keyArg *= 0.96f;
+		}
+		
+		// synch with variables
+		switch( it->first ){
+			case '1':
+				param2 -= it->second.keyArg*6.f;
+				if(param2 < param2.getMin() ) param2.set(param2.getMin());
+				break;
+			case '2':
+				param2 += it->second.keyArg*6.f;
+				if(param2 > param2.getMax() ) param2.set(param2.getMax());
+				break;
+			default:
+				
+				// do nothing
+				break;
+		}
+		
+		// erase & increment
+		if( it->second.keyArg<0.05f ){
+			auto item = pressedKeys.find(it->first);
+			pressedKeys.erase( it++ );
+		}
+		else {
+			it++;
+		}
 		
 	}
 }
@@ -278,6 +323,17 @@ void enigmatikSlideshow::exit(){
 	
 	// image loaded event
 	ofRemoveListener(imgLoader.imageLoaded,this, &enigmatikSlideshow::newImageLoaded);
+#endif
+	
+#ifdef USE_RPI_GPIO
+	// todo: link virtual buttons to physical buttons
+	//param3.unlinkWithGPIO(1,16);
+	
+#else
+	// bind keyboard shortcuts to control the effects
+	pressedKeys.clear();
+	ofRemoveListener(ofEvents().keyPressed, this, &enigmatikSlideshow::enigmaKeyPressed);
+	ofRemoveListener(ofEvents().keyReleased, this, &enigmatikSlideshow::enigmaKeyReleased);
 #endif
 	
 	// rm event listeners
@@ -487,6 +543,45 @@ void enigmatikSlideshow::resetEffects(){
 	reRenderOutput = true;
 }
 
+// control params with keyboard
+#ifndef USE_RPI_GPIO
+void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
+	vector<int> availableKeys;
+	availableKeys.resize(0);
+	availableKeys.push_back('1');
+	availableKeys.push_back('2');
+	
+	// route key
+	for (int i=0; i<availableKeys.size(); ++i){
+		
+		if( availableKeys[i] == e.key ){
+			auto key = pressedKeys.find(e.key);
+			if( key == pressedKeys.end() ){
+				keyState ks;
+				ks.keyArg = 0.1f;
+				ks.isPressed=true;
+				pressedKeys[e.key] = ks;
+			}
+			else { // key already exists
+				key->second.keyArg = key->second.keyArg + .1f;
+				key->second.isPressed = true;
+			}
+			
+			return;
+		}
+	}
+}
+
+void enigmatikSlideshow::enigmaKeyReleased(ofKeyEventArgs &e){
+	
+	// route key
+	auto it = pressedKeys.find(e.key);
+	if( it!=pressedKeys.end() ){
+		pressedKeys[e.key].isPressed=false;
+	}
+}
+#endif
+
 // GLITCH EFFECTS
 
 // GLITCH #2 : enigmatikPotentiometer
@@ -500,7 +595,7 @@ void enigmatikSlideshow::setParam2Solved( int& value ){
 	param2Solved = 1 - param2.getDistFromTarget();
 	if(param2Solved == lastParam2Solved) return;
 	else lastParam2Solved = param2Solved;
-	cout << "param2Solved = " << param2Solved << endl;
+	//cout << "param2Solved = " << param2Solved << endl;
 	
 	// triggers a new rendering
 	reRenderOutput = true;
@@ -620,3 +715,7 @@ int enigmatikSlideshow::getRealSlideNum(int _num){
 	else return abs( _num % numSlides );
 }
 
+
+// forward declaration
+//class enigmatikSlideshow;
+//ofEvent<ofKeyEventArgs> durationReceiver::durationTempoEvent;

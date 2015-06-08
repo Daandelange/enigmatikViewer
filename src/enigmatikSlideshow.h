@@ -20,6 +20,11 @@
 //#include "ofxGuiDynamicIntSlider.h"
 #include "enigmatikParam.h"
 
+struct keyState {
+	float keyArg;
+	bool isPressed;
+};
+
 class enigmatikSlideshow {
 
 public:
@@ -55,6 +60,13 @@ public:
 	enigmatikThreePosSwitch param4;
 	enigmatikPushButton param5;
 	enigmatikPotentiometer param6;
+	
+	// keyboard stuff
+#ifndef USE_RPI_GPIO
+	map<int,keyState> pressedKeys;
+	void enigmaKeyPressed(ofKeyEventArgs &e);
+	void enigmaKeyReleased(ofKeyEventArgs &e);
+#endif
 	
 	// GLITCH EFFECTS
 	void setParam2Solved(int& value);
