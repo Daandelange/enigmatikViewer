@@ -1,7 +1,8 @@
 // uncomment to compile on RPI and activate
 // also add -Wiringpi to compiler settings ( // todo: )
-#define USE_RPI_GPIO
+//#define USE_RPI_GPIO
 //#define USE_PROGRAMMABLE_GL
+#define USE_KEYBOARD_SHORTCUTS
 
 #include "ofMain.h"
 #include "enigmatikViewer.h"
@@ -85,12 +86,12 @@ int main( ){
 	#else
 	
 		//ofGLESWindowSettings windowSettings;
-		ofGLWindowSettings windowSettings;
-		//ofGLFWWindowSettings windowSettings;
+		//ofGLWindowSettings windowSettings;
+		ofGLFWWindowSettings windowSettings;
 		windowSettings.width = 800;
 		windowSettings.height = 600;
 	
-		windowSettings.setGLVersion(3, 2);
+		windowSettings.setGLVersion(4, 1);
 		shared_ptr<ofAppBaseWindow> window = ofCreateWindow(windowSettings);
 		//ofDisableArbTex();
 	#endif
@@ -102,7 +103,7 @@ int main( ){
 	ofSetBackgroundColor(0,255,255,.5f);//ofColor(255,255,255,255));
 	ofSetBackgroundAuto(false); // tmp
 	
-	shared_ptr<enigmatikViewer> mainApp(new enigmatikViewer);
+	shared_ptr<enigmatikViewer> mainApp(new enigmatikViewer );
 	ofRunApp(window, mainApp);
 	ofRunMainLoop();
 }

@@ -62,7 +62,7 @@ public:
 	enigmatikPotentiometer param6;
 	
 	// keyboard stuff
-#ifndef USE_RPI_GPIO
+#ifdef USE_KEYBOARD_SHORTCUTS
 	map<int,keyState> pressedKeys;
 	void enigmaKeyPressed(ofKeyEventArgs &e);
 	void enigmaKeyReleased(ofKeyEventArgs &e);

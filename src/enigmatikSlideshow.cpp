@@ -102,8 +102,8 @@ void enigmatikSlideshow::setup() {
 #ifdef USE_RPI_GPIO
 	// todo: link virtual buttons to physical buttons
 	//param3.linkWithGPIO(1,16);
-
-#else
+#endif
+#ifdef USE_KEYBOARD_SHORTCUTS
 	// bind keyboard shortcuts to control the effects
 	pressedKeys.clear(); // tmp
 	ofAddListener(ofEvents().keyPressed, this, &enigmatikSlideshow::enigmaKeyPressed);
@@ -163,6 +163,7 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 	}
 	
 	// handle pressed keys
+#ifdef USE_KEYBOARD_SHORTCUTS
 	if(pressedKeys.size()>0) for(map<int,keyState>::iterator it=pressedKeys.begin(); it != pressedKeys.end(); /*nothing*/ ){
 		// update value velocity
 		if(it->second.isPressed == true){
@@ -200,6 +201,7 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		}
 		
 	}
+#endif
 }
 
 
@@ -329,7 +331,9 @@ void enigmatikSlideshow::exit(){
 	// todo: link virtual buttons to physical buttons
 	//param3.unlinkWithGPIO(1,16);
 	
-#else
+#endif
+	
+#ifdef USE_KEYBOARD_SHORTCUTS
 	// bind keyboard shortcuts to control the effects
 	pressedKeys.clear();
 	ofRemoveListener(ofEvents().keyPressed, this, &enigmatikSlideshow::enigmaKeyPressed);
@@ -544,7 +548,7 @@ void enigmatikSlideshow::resetEffects(){
 }
 
 // control params with keyboard
-#ifndef USE_RPI_GPIO
+#ifdef USE_KEYBOARD_SHORTCUTS
 void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
 	vector<int> availableKeys;
 	availableKeys.resize(0);
