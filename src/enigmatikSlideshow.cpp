@@ -210,6 +210,8 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 #endif
 	
 	if( reRenderOutput == true ){
+		ofLogVerbose("enigmatikSlideshow::_update") << "Rendering a new image";
+		
 		// update fbo image
 		fbo.begin();
 		ofPushMatrix();
@@ -275,9 +277,8 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 
 
 void enigmatikSlideshow::draw() {
-	if( reDrawOutput == false ) return;
-	
-	if(fbo.isAllocated()){
+	if( reDrawOutput == true && fbo.isAllocated()){
+		ofLogVerbose("enigmatikSlideshow::_draw") << "Drawing a new image";
 		fbo.draw(0,0);
 		reDrawOutput = false;
 	}
@@ -287,7 +288,7 @@ void enigmatikSlideshow::draw() {
 	
 #ifdef USE_RPI_GPIO
 	// saves battery
-	ofSleepMillis(50);
+	//ofSleepMillis(50);
 #endif
 }
 
@@ -298,9 +299,6 @@ void enigmatikSlideshow::_draw(ofEventArgs &e){
 	//ofClear(0);
 	
 	//if(reRenderOutput==false) return;
-
-	
-	ofLogVerbose("enigmatikSlideshow::_draw") << "Rendering a new image";
 	
 	draw();
 
