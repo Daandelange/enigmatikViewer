@@ -21,6 +21,7 @@ void enigmatikViewer::setup(){
 	// add event controls
 	
 	
+	ofxMouseAutoHider::enable();
 }
 
 //--------------------------------------------------------------

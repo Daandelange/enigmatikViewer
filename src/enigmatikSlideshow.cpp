@@ -212,7 +212,7 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 				// PARAM 3
 				case 'q':
 					param3 -= it->second.keyArg*6.f;
-					if(param3 < param2.getMin() ) param3.set(param3.getMin());
+					if(param3 < param3.getMin() ) param3.set(param3.getMin());
 					break;
 				case 'w':
 					param3 += it->second.keyArg*6.f;
