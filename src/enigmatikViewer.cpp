@@ -4,11 +4,14 @@
 void enigmatikViewer::setup(){
 	
 	// some settings for optimisation
+	//ofSetBackgroundColor(0,255,255,.5f);//ofColor(255,255,255,255));
 	ofSetBackgroundAuto(false); // allows to keep same image when it doesn't change
-	ofSetVerticalSync(true); // cleaner output
-	ofDisableAntiAliasing();
-	ofDisableDepthTest();
-	ofxMouseAutoHider::enable();
+	//ofSetVerticalSync(true); // cleaner output
+	//ofDisableAntiAliasing();
+	//ofDisableDepthTest();
+	
+	//ofEnableAlphaBlending(); // otherwise alpha channel is ignored by GL
+	//ofEnableArbTex();
 	
 	// initialise slideshow
 	slider.setup();

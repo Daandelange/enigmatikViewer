@@ -218,8 +218,8 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		ofPushStyle();
 		ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
 		
-		currentSlide.bind();
-		nextSlide.bind();
+		//currentSlide.bind();
+		//nextSlide.bind();
 		
 		sGlitch2.begin();
 		// upload variables to shader
@@ -227,15 +227,15 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		sGlitch2.setUniform1f("param3Solved", param3Solved);
 		sGlitch2.setUniform1f("param6Solved", param6Solved);
 		sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
-		sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
-		ofTexture t;
-		t.allocate(glitchData2);
-		t.loadData(glitchData2);
-		t.allocate(glitchData2);
-		t.bind();
+		//sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
+		//ofTexture t;
+		//t.allocate(glitchData2);
+		//t.loadData(glitchData2);
+		//t.allocate(glitchData2);
+		//t.bind();
 		
 		// transmit data to shader
-		sGlitch2.setUniformTexture("glitchData2", t, 2);//t.getTextureData().textureID );
+		//sGlitch2.setUniformTexture("glitchData2", t, 2);//t.getTextureData().textureID );
 		
 		sGlitch2.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
 		sGlitch2.setUniform1f("timeValY", -ofGetElapsedTimef() * 0.18 );
@@ -250,9 +250,9 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		sGlitch2.setUniform1f("textureScale", 1);
 		//sGlitch2.setUniform1i("tex", 0);
 		
-		currentSlide.getTextureReference().bind();
+		//currentSlide.getTextureReference().bind();
 		slideGrid.draw();
-		currentSlide.getTextureReference().unbind();
+		//currentSlide.getTextureReference().unbind();
 		
 		//slideGrid.drawWireframe();
 		sGlitch2.end();
@@ -261,9 +261,9 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		ofSetColor(255);
 		//glitchData2.draw(-ofGetWidth()/2, -ofGetHeight()/2, ofGetWidth()/3, ofGetHeight()/3 );
 		
-		t.unbind();
-		currentSlide.unbind();
-		nextSlide.unbind();
+		//t.unbind();
+		//currentSlide.unbind();
+		//nextSlide.unbind();
 		
 		ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
 		ofPopStyle();
