@@ -178,11 +178,12 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 			if(it->second.keyArg > 1.f) it->second.keyArg=1.f; // max out value
 		}
 		else{
-			it->second.keyArg *= 0.96f;
+			it->second.keyArg *= 0.86f;
 		}
 		
 		// synch with variables
 		switch( it->first ){
+			// PARAM 2
 			case '1':
 				param2 -= it->second.keyArg*6.f;
 				if(param2 < param2.getMin() ) param2.set(param2.getMin());
@@ -190,6 +191,24 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 			case '2':
 				param2 += it->second.keyArg*6.f;
 				if(param2 > param2.getMax() ) param2.set(param2.getMax());
+				break;
+			// PARAM 3
+			case 'q':
+				param3 -= it->second.keyArg*6.f;
+				if(param3 < param2.getMin() ) param3.set(param3.getMin());
+				break;
+			case 'w':
+				param3 += it->second.keyArg*6.f;
+				if(param3 > param3.getMax() ) param3.set(param3.getMax());
+				break;
+			// PARAM 6
+			case 'a':
+				param6 -= it->second.keyArg*6.f;
+				if(param6 < param2.getMin() ) param6.set(param6.getMin());
+				break;
+			case 's':
+				param6 += it->second.keyArg*6.f;
+				if(param6 > param6.getMax() ) param6.set(param6.getMax());
 				break;
 			default:
 				
@@ -277,7 +296,8 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 
 
 void enigmatikSlideshow::draw() {
-	if( reDrawOutput == true && fbo.isAllocated()){
+	// tmp : uncomment the comment below when RPI is ready not to erase FBO automatically and save enormous amounts of CPU power.
+	if( /*reDrawOutput == true &&*/ fbo.isAllocated()){
 		ofLogVerbose("enigmatikSlideshow::_draw") << "Drawing a new image";
 		fbo.draw(0,0);
 		reDrawOutput = false;
@@ -541,6 +561,10 @@ void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
 	availableKeys.resize(0);
 	availableKeys.push_back('1');
 	availableKeys.push_back('2');
+	availableKeys.push_back('q');
+	availableKeys.push_back('w');
+	availableKeys.push_back('a');
+	availableKeys.push_back('s');
 	
 	// route key
 	for (int i=0; i<availableKeys.size(); ++i){
