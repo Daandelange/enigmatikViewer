@@ -1,14 +1,22 @@
 precision highp float; // this will make the default precision high
 
 uniform vec4 color;
+uniform sampler2D tex0;
 
-uniform float time;
+varying vec2 vertexTexCoord;
+
+uniform float param2Solved;
 		
 void main()
 {
 	// Pulse screen
-	float col = (cos(time*2.0)+1.0)*0.5;
-	gl_FragColor = vec4( col, col, col, 1.0 ); 
+	//float col = (cos(param2Solved*2.0)+1.0)*0.5;
+	//gl_FragColor = vec4( col, col, col, 1.0 );
+
+	vec2 texturePixelPosition = vertexTexCoord;//mod( (vertexTexCoord)/resolution*textureResolution, textureResolution);
+	vec4 imageColor = vec4( texture2D(tex0, texturePixelPosition ).rgb, 1);
+	gl_FragColor = imageColor-vec4(param2Solved,param2Solved,param2Solved,0);
+
 
 	/*
 	// Bars
