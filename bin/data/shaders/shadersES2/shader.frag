@@ -57,7 +57,7 @@ void main()
 		mod( outputColor.g*( ( (param3Solved+6.1) * param3Solved )-6.1), 1.0 ),
 		mod( outputColor.b*( ( (param3Solved-1.3) * param3Solved )+1.3), 1.0 )
 		,1);
-	/*/ fix for effect 3 if color = 1; (1%1=0 unstead of 1)
+	// fix for effect 3 if color = 1; (1%1=0 unstead of 1)
 	if(param3Solved == 1.0){
 		if(outputColor.r==0.0) outputColor.r=1.0;
 		if(outputColor.g==0.0) outputColor.g=1.0;
@@ -67,12 +67,12 @@ void main()
 	// apply glitch effect 3
 	float pixelBrightness;
 	pixelBrightness = getBrightness( texture2D(tex0, texturePixelPosition ).rgb );
-	float effectIntensity = getBrightness( texture2D(glitchData2, vertexTexCoord ).rgb);
+	float effectIntensity = getBrightness( texture2D(tex0, texturePixelPosition ).rgb);
 
 	if( pixelBrightness > param2Solved ){
 		//outputColor += texture(tex0, vertexTexCoord) * (1-param2Solved) + texture(nextSlide1, vertexTexCoord) * param2Solved;
 		//float effect2_intensity = 
-		vec2 posOffset = vec2( mod(effectIntensity*50.*(pixelBrightness-param2Solved)+texturePixelPosition.x, 50.), mod(effectIntensity*40.+texturePixelPosition.x+param2Solved, 40.) );
+		vec2 posOffset = vec2( mod(effectIntensity*0.4*(pixelBrightness-param2Solved)+texturePixelPosition.x, 0.35), mod(effectIntensity*0.23+texturePixelPosition.x+param2Solved, 0.23) );
 		vec4 newColor = vec4( texture2D(tex0, texturePixelPosition+posOffset ).rgb, 1);
 		vec4 effect2 = vec4( texture2D(tex0, texturePixelPosition ).rgb * vec3(effectIntensity,effectIntensity,effectIntensity), 1);
 		outputColor = newColor;
@@ -95,5 +95,5 @@ void main()
 	// solved indicator (for debugging)
 	if(param2Solved == 1. && param3Solved ==1. ) outputColor.g += 0.15;
 
-	gl_FragColor = vec4(1,0,0,1);//outputColor;
+	gl_FragColor = outputColor;
 }

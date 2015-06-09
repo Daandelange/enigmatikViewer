@@ -180,6 +180,13 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 			it->second.isPressed = false;
 		}
 		
+		// gui hider
+		else if(it->first == ']' ) {
+			showControls = !showControls;
+			it->second.keyArg = 0;
+			it->second.isPressed = false;
+		}
+		
 		else {
 			// update value velocity
 			if(it->second.isPressed == true){
@@ -578,6 +585,7 @@ void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
 	availableKeys.push_back('s');
 	availableKeys.push_back(OF_KEY_LEFT);
 	availableKeys.push_back(OF_KEY_RIGHT);
+	availableKeys.push_back(']');
 	
 	// route key
 	for (int i=0; i<availableKeys.size(); ++i){
