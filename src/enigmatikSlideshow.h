@@ -11,6 +11,7 @@
 // uncomment to enable (untested)
 //#define USE_THREADED_IMAGE_LOADER
 
+#include "enigmatikConstants.h"
 #include "ofMain.h"
 #include "ofEvents.h"
 //#include "ofParameter.h"
@@ -20,10 +21,12 @@
 //#include "ofxGuiDynamicIntSlider.h"
 #include "enigmatikParam.h"
 
-struct keyState {
+typedef struct enigmaKeyState {
 	float keyArg;
 	bool isPressed;
-};
+} enigmaKeyState;
+
+typedef std::map<int,enigmaKeyState> enigmaKeyMap;
 
 class enigmatikSlideshow {
 
@@ -63,7 +66,6 @@ public:
 	
 	// keyboard stuff
 #ifdef USE_KEYBOARD_SHORTCUTS
-	map<int,keyState> pressedKeys;
 	void enigmaKeyPressed(ofKeyEventArgs &e);
 	void enigmaKeyReleased(ofKeyEventArgs &e);
 #endif
@@ -105,6 +107,11 @@ private:
 	ofxIntSlider currentSlideNum, nextSlideNum;
 #ifdef USE_THREADED_IMAGE_LOADER
 	ofxThreadedImageLoader imgLoader;
+#endif
+	
+#ifdef USE_KEYBOARD_SHORTCUTS
+	#pragma message("USE_KEYBOARD_SHORTCUTS is defined!")
+	enigmaKeyMap enigmaPressedKeys;
 #endif
 	
 	ofParameterGroup buttons;

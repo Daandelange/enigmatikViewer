@@ -8,6 +8,7 @@
 
 #pragma once
 
+#include "enigmatikConstants.h"
 #include "ofMain.h"
 #include "ofParameter.h"
 

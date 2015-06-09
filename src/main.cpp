@@ -1,22 +1,22 @@
 // uncomment to compile on RPI and activate
 // also add -Wiringpi to compiler settings ( // todo: )
-//#define USE_RPI_GPIO
-//#define USE_PROGRAMMABLE_GL
-#define USE_KEYBOARD_SHORTCUTS
 
+#include "enigmatikConstants.h"
 #include "ofMain.h"
 #include "enigmatikViewer.h"
 
 #ifdef USE_RPI_GPIO
-#ifdef TARGET_OPENGLES
-#include "ofGLProgrammableRenderer.h"
-#endif
-#include "ofAppEGLWindow.h"
+	#ifdef TARGET_OPENGLES
+		#include "ofGLProgrammableRenderer.h"
+	#endif
+	#include "ofAppEGLWindow.h"
 #else
-//#include "ofAppGLFWWindow.h"
-//#import <OpenGL/OpenGL.h>
-//#import <GLUT/GLUT.h>
-#include "ofGLProgrammableRenderer.h"
+	//#include "ofAppGLFWWindow.h"
+	//#import <OpenGL/OpenGL.h>
+	//#import <GLUT/GLUT.h>
+	#ifdef USE_PROGRAMMABLE_GL
+		#include "ofGLProgrammableRenderer.h"
+	#endif
 #endif
 
 
@@ -25,7 +25,7 @@ int main( ){
 
 	ofSetLogLevel(OF_LOG_VERBOSE);
 	
-#ifdef USE_RPI_GPIO
+#ifdef TARGET_OPENGLES
 	ofLogVerbose("enigmatikViewer") << "Running in rpi mode using OPENGL " << glGetString(GL_VERSION) << endl;
 	// useful for later? http://ofxfenster.undef.ch/doc/structofAppEGLWindow_1_1Settings.html
 	
@@ -41,8 +41,8 @@ int main( ){
 	// car rearview screen resolution: 320*240
 	
 	ofGLESWindowSettings windowSettings;
-	windowSettings.width = 800;
-	windowSettings.height = 600;
+	windowSettings.width =320;
+	windowSettings.height = 240;
 	windowSettings.setGLESVersion(2);
 	shared_ptr<ofAppBaseWindow> window = ofCreateWindow(windowSettings);
 	
@@ -86,8 +86,8 @@ int main( ){
 	#else
 	
 		//ofGLESWindowSettings windowSettings;
-		//ofGLWindowSettings windowSettings;
-		ofGLFWWindowSettings windowSettings;
+		ofGLWindowSettings windowSettings;
+		//ofGLFWWindowSettings windowSettings;
 		windowSettings.width = 800;
 		windowSettings.height = 600;
 	

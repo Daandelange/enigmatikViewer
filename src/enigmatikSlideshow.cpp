@@ -15,8 +15,11 @@
 
 // todo: slider button-based transition system
 
+#include "enigmatikConstants.h"
 #include "enigmatikSlideshow.h"
-#include <algorithm>// needed for std::vector::find
+
+//#include <algorithm>// needed for std::vector::find
+//#include <map>// needed for std::vector::find
 
 // MARK: Init
 
@@ -103,9 +106,11 @@ void enigmatikSlideshow::setup() {
 	// todo: link virtual buttons to physical buttons
 	//param3.linkWithGPIO(1,16);
 #endif
+	
 #ifdef USE_KEYBOARD_SHORTCUTS
+	#pragma message("USE_KEYBOARD_SHORTCUTS is defined!")
 	// bind keyboard shortcuts to control the effects
-	pressedKeys.clear(); // tmp
+	enigmaPressedKeys.clear();
 	ofAddListener(ofEvents().keyPressed, this, &enigmatikSlideshow::enigmaKeyPressed);
 	ofAddListener(ofEvents().keyReleased, this, &enigmatikSlideshow::enigmaKeyReleased);
 #endif
@@ -164,7 +169,7 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 	
 	// handle pressed keys
 #ifdef USE_KEYBOARD_SHORTCUTS
-	if(pressedKeys.size()>0) for(map<int,keyState>::iterator it=pressedKeys.begin(); it != pressedKeys.end(); /*nothing*/ ){
+	if(enigmaPressedKeys.size()>0) for(enigmaKeyMap::iterator it=enigmaPressedKeys.begin(); it != enigmaPressedKeys.end(); /*nothing*/ ){
 		// update value velocity
 		if(it->second.isPressed == true){
 			cout << it->second.keyArg << endl;
@@ -193,8 +198,8 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		
 		// erase & increment
 		if( it->second.keyArg<0.05f ){
-			auto item = pressedKeys.find(it->first);
-			pressedKeys.erase( it++ );
+			auto item = enigmaPressedKeys.find(it->first);
+			enigmaPressedKeys.erase( it++ );
 		}
 		else {
 			it++;
@@ -334,11 +339,11 @@ void enigmatikSlideshow::exit(){
 #endif
 	
 #ifdef USE_KEYBOARD_SHORTCUTS
-	// bind keyboard shortcuts to control the effects
-	pressedKeys.clear();
 	ofRemoveListener(ofEvents().keyPressed, this, &enigmatikSlideshow::enigmaKeyPressed);
 	ofRemoveListener(ofEvents().keyReleased, this, &enigmatikSlideshow::enigmaKeyReleased);
 #endif
+	
+
 	
 	// rm event listeners
 	prevButton.removeListener(this, &enigmatikSlideshow::loadPrevSlide );
@@ -559,12 +564,12 @@ void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
 	for (int i=0; i<availableKeys.size(); ++i){
 		
 		if( availableKeys[i] == e.key ){
-			auto key = pressedKeys.find(e.key);
-			if( key == pressedKeys.end() ){
-				keyState ks;
+			auto key = enigmaPressedKeys.find(e.key);
+			if( key == enigmaPressedKeys.end() ){
+				enigmaKeyState ks;
 				ks.keyArg = 0.1f;
 				ks.isPressed=true;
-				pressedKeys[e.key] = ks;
+				enigmaPressedKeys[e.key] = ks;
 			}
 			else { // key already exists
 				key->second.keyArg = key->second.keyArg + .1f;
@@ -579,9 +584,9 @@ void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
 void enigmatikSlideshow::enigmaKeyReleased(ofKeyEventArgs &e){
 	
 	// route key
-	auto it = pressedKeys.find(e.key);
-	if( it!=pressedKeys.end() ){
-		pressedKeys[e.key].isPressed=false;
+	auto it = enigmaPressedKeys.find(e.key);
+	if( it!=enigmaPressedKeys.end() ){
+		enigmaPressedKeys[e.key].isPressed=false;
 	}
 }
 #endif

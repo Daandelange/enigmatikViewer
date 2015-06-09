@@ -1,5 +1,6 @@
 #pragma once
 
+#include "enigmatikConstants.h"
 #include "ofMain.h"
 #include "ofEvents.h"
 #include "enigmatikSlideshow.h"
