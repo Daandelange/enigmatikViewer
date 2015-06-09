@@ -117,6 +117,7 @@ private:
 	ofParameterGroup buttons;
 	ofxPanel buttonGui;
 	bool reRenderOutput;
+	bool reDrawOutput;
 	
 	ofFbo fbo;
 };

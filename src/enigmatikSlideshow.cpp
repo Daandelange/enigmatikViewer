@@ -137,6 +137,7 @@ void enigmatikSlideshow::setup() {
 	
 	// render output image
 	reRenderOutput=true;
+	reDrawOutput = true;
 	
 	// for Rpi this (may?) needs to be defined here
 	ofSetBackgroundAuto(false);
@@ -207,119 +208,102 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		
 	}
 #endif
+	
+	if( reRenderOutput == true ){
+		// update fbo image
+		fbo.begin();
+		ofPushMatrix();
+		ofPushStyle();
+		ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
+		
+		currentSlide.bind();
+		nextSlide.bind();
+		
+		sGlitch2.begin();
+		// upload variables to shader
+		sGlitch2.setUniform1f("param2Solved", param2Solved);
+		sGlitch2.setUniform1f("param3Solved", param3Solved);
+		sGlitch2.setUniform1f("param6Solved", param6Solved);
+		sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
+		sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
+		ofTexture t;
+		t.allocate(glitchData2);
+		t.loadData(glitchData2);
+		t.allocate(glitchData2);
+		t.bind();
+		
+		// transmit data to shader
+		sGlitch2.setUniformTexture("glitchData2", t, 2);//t.getTextureData().textureID );
+		
+		sGlitch2.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
+		sGlitch2.setUniform1f("timeValY", -ofGetElapsedTimef() * 0.18 );
+		
+		// add shadertoy sandbox variables ( tmp?)
+		sGlitch2.setUniform3f("iResolution", ofGetWidth(), ofGetHeight(), 0);
+		sGlitch2.setUniform4f("iMouse", ofGetMouseX(), ofGetMouseY(), 0, 0 );
+		sGlitch2.setUniform1f("iGlobalTime", ofGetElapsedTimef());
+		sGlitch2.setUniform2f("resolution", ofGetWidth(), ofGetHeight() );
+		sGlitch2.setUniform2f("textureResolution", currentSlide.width, currentSlide.height );
+		sGlitch2.setUniform2f("shapeCenterOffset", 0, 0 );// pShape->getCenterOffsetFromBoundingBox().x, pShape->getCenterOffsetFromBoundingBox().y);
+		sGlitch2.setUniform1f("textureScale", 1);
+		//sGlitch2.setUniform1i("tex", 0);
+		
+		currentSlide.getTextureReference().bind();
+		slideGrid.draw();
+		currentSlide.getTextureReference().unbind();
+		
+		//slideGrid.drawWireframe();
+		sGlitch2.end();
+		
+		// tmp
+		ofSetColor(255);
+		//glitchData2.draw(-ofGetWidth()/2, -ofGetHeight()/2, ofGetWidth()/3, ofGetHeight()/3 );
+		
+		t.unbind();
+		currentSlide.unbind();
+		nextSlide.unbind();
+		
+		ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
+		ofPopStyle();
+		ofPopMatrix();
+		
+		fbo.end();
+		reRenderOutput = false;
+		reDrawOutput = true;
+	}
 }
 
 
 void enigmatikSlideshow::draw() {
+	if( reDrawOutput == false ) return;
 	
-	if( !sGlitch2.isLoaded() ){
-		ofLogWarning("enigmatikSlideshow::draw() --> shader not loaded or linked");
-		return;
+	if(fbo.isAllocated()){
+		fbo.draw(0,0);
+		reDrawOutput = false;
 	}
+
+	// show GUI elements
+	if(showControls) gui.draw();
 	
-	fbo.begin();
-	ofPushMatrix();
-	ofPushStyle();
-	ofTranslate(ofGetWidth()/2, ofGetHeight()/2);
-	
-	currentSlide.bind();
-	nextSlide.bind();
-	
-	sGlitch2.begin();
-	// upload variables to shader
-	sGlitch2.setUniform1f("param2Solved", param2Solved);
-	sGlitch2.setUniform1f("param3Solved", param3Solved);
-	sGlitch2.setUniform1f("param6Solved", param6Solved);
-	sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
-	sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
-	ofTexture t;
-	t.allocate(glitchData2);
-	t.loadData(glitchData2);
-	t.allocate(glitchData2);
-	t.bind();
-	
-	// transmit data to shader
-	sGlitch2.setUniformTexture("glitchData2", t, 2);//t.getTextureData().textureID );
-	
-	sGlitch2.setUniform1f("timeValX", ofGetElapsedTimef() * 0.1 );
-	sGlitch2.setUniform1f("timeValY", -ofGetElapsedTimef() * 0.18 );
-	
-	// add shadertoy sandbox variables ( tmp?)
-	sGlitch2.setUniform3f("iResolution", ofGetWidth(), ofGetHeight(), 0);
-	sGlitch2.setUniform4f("iMouse", ofGetMouseX(), ofGetMouseY(), 0, 0 );
-	sGlitch2.setUniform1f("iGlobalTime", ofGetElapsedTimef());
-	sGlitch2.setUniform2f("resolution", ofGetWidth(), ofGetHeight() );
-	sGlitch2.setUniform2f("textureResolution", currentSlide.width, currentSlide.height );
-	sGlitch2.setUniform2f("shapeCenterOffset", 0, 0 );// pShape->getCenterOffsetFromBoundingBox().x, pShape->getCenterOffsetFromBoundingBox().y);
-	sGlitch2.setUniform1f("textureScale", 1);
-	//sGlitch2.setUniform1i("tex", 0);
-	
-	currentSlide.getTextureReference().bind();
-	slideGrid.draw();
-	currentSlide.getTextureReference().unbind();
-	
-	//slideGrid.drawWireframe();
-	sGlitch2.end();
-	
-	// tmp
-	ofSetColor(255);
-	//glitchData2.draw(-ofGetWidth()/2, -ofGetHeight()/2, ofGetWidth()/3, ofGetHeight()/3 );
-	
-	t.unbind();
-	currentSlide.unbind();
-	nextSlide.unbind();
-	
-	ofTranslate(-ofGetWidth()/2, -ofGetHeight()/2);
-	ofPopStyle();
-	ofPopMatrix();
-	
-	fbo.end();
-	fbo.draw(0,0);
+#ifdef USE_RPI_GPIO
+	// saves battery
+	ofSleepMillis(50);
+#endif
 }
 
 void enigmatikSlideshow::_draw(ofEventArgs &e){
 	// here you can force actions (draw() is virtual)
 	//ofSetColor(0,0,255,1);
 	//ofDrawRectangle(0,0,ofGetWidth(), ofGetHeight());
-	ofClear(0);
+	//ofClear(0);
 	
-	// prevents CPU overload
-	if(!reRenderOutput){
-		//ofLogVerbose("enigmatikSlideshow::_draw") << "Not re-rendering" << endl;
-		
-		//update glitch images
-		
-//#ifdef USE_RPI_GPIO
-		bool tmp = ofGetBackgroundAuto();
-		if(tmp==true) ofLogVerbose("enigmatikSlideshow::_draw") << "Renderer can't be set not to refresh buffer... :'( ";
-		if( fbo.isAllocated() ) fbo.draw(0,0);
-//#endif
-		
-		// show GUI elements
-		if(showControls) gui.draw();
+	//if(reRenderOutput==false) return;
 
-#ifdef USE_RPI_GPIO
-		// saves battery
-		ofSleepMillis(50);
-#endif
-
-		return;
-	} // */
 	
 	ofLogVerbose("enigmatikSlideshow::_draw") << "Rendering a new image";
 	
 	draw();
-	
-	// show GUI elements
-	if(showControls) gui.draw();
-	
-	reRenderOutput = false;
-	
-#ifdef USE_RPI_GPIO
-	// saves battery
-	ofSleepMillis(50);
-#endif
-	
+
 	return;
 }
 
