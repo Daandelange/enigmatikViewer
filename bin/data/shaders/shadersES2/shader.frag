@@ -5,12 +5,14 @@ precision highp float;
 
 // this is how we receive the texture
 uniform sampler2D tex0; // video layer
-uniform sampler2D nextSlide1;
-uniform sampler2D glitchData2; // contains regions to apply the effect to.
+//uniform sampler2D nextSlide1;
+//uniform sampler2D glitchData2; // contains regions to apply the effect to.
 
 // to enable
 uniform float param2Solved;
 uniform float param3Solved;
+uniform float param6Solved;
+
 uniform vec2 resolution;
 uniform vec2 textureResolution;
 uniform float textureScale;
@@ -39,7 +41,6 @@ float getBrightness(vec3 _color){
 
 void main()
 {
-    vec4 color = gl_FragColor;
 	vec4 outputColor;
 	//outputColor = vec4( texture(tex0, gl_FragCoord.xy/resolution.xy ).rgb, 1);
 	vec2 texturePixelPosition = mod( (vertexTexCoord)/resolution*textureResolution, textureResolution);

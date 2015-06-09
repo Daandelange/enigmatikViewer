@@ -19,7 +19,10 @@ uniform float param6Solved;
 
 void main()
 {
+    vec4 pos = projectionMatrix * modelViewMatrix * position;
+    vertexTexCoord = texcoord;
 
+    gl_Position = pos;
     // Absolute window position: gl_FragCoord.x / windowWidth
     //gl_Position.xy;// 
     //vertexTexCoord = position.xy;

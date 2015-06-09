@@ -171,51 +171,62 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 	// handle pressed keys
 #ifdef USE_KEYBOARD_SHORTCUTS
 	if(enigmaPressedKeys.size()>0) for(enigmaKeyMap::iterator it=enigmaPressedKeys.begin(); it != enigmaPressedKeys.end(); /*nothing*/ ){
-		// update value velocity
-		if(it->second.isPressed == true){
-			cout << it->second.keyArg << endl;
-			it->second.keyArg += 0.05f;
-			if(it->second.keyArg > 1.f) it->second.keyArg=1.f; // max out value
-		}
-		else{
-			it->second.keyArg *= 0.86f;
+		
+		// slideshow control
+		if( it->first == OF_KEY_LEFT || it->first == OF_KEY_RIGHT ){
+			(it->first == OF_KEY_LEFT)?loadPrevSlide():loadNextSlide();
+			
+			it->second.keyArg = 0;
+			it->second.isPressed = false;
 		}
 		
-		// synch with variables
-		switch( it->first ){
-			// PARAM 2
-			case '1':
-				param2 -= it->second.keyArg*6.f;
-				if(param2 < param2.getMin() ) param2.set(param2.getMin());
-				break;
-			case '2':
-				param2 += it->second.keyArg*6.f;
-				if(param2 > param2.getMax() ) param2.set(param2.getMax());
-				break;
-			// PARAM 3
-			case 'q':
-				param3 -= it->second.keyArg*6.f;
-				if(param3 < param2.getMin() ) param3.set(param3.getMin());
-				break;
-			case 'w':
-				param3 += it->second.keyArg*6.f;
-				if(param3 > param3.getMax() ) param3.set(param3.getMax());
-				break;
-			// PARAM 6
-			case 'a':
-				param6 -= it->second.keyArg*6.f;
-				if(param6 < param2.getMin() ) param6.set(param6.getMin());
-				break;
-			case 's':
-				param6 += it->second.keyArg*6.f;
-				if(param6 > param6.getMax() ) param6.set(param6.getMax());
-				break;
-			default:
-				
-				// do nothing
-				break;
+		else {
+			// update value velocity
+			if(it->second.isPressed == true){
+				//cout << it->second.keyArg << endl;
+				it->second.keyArg += 0.05f;
+				if(it->second.keyArg > 1.f) it->second.keyArg=1.f; // max out value
+			}
+			else{
+				it->second.keyArg *= 0.86f;
+			}
+			
+			// synch with variables
+			switch( it->first ){
+				// PARAM 2
+				case '1':
+					param2 -= it->second.keyArg*6.f;
+					if(param2 < param2.getMin() ) param2.set(param2.getMin());
+					break;
+				case '2':
+					param2 += it->second.keyArg*6.f;
+					if(param2 > param2.getMax() ) param2.set(param2.getMax());
+					break;
+				// PARAM 3
+				case 'q':
+					param3 -= it->second.keyArg*6.f;
+					if(param3 < param2.getMin() ) param3.set(param3.getMin());
+					break;
+				case 'w':
+					param3 += it->second.keyArg*6.f;
+					if(param3 > param3.getMax() ) param3.set(param3.getMax());
+					break;
+				// PARAM 6
+				case 'a':
+					param6 -= it->second.keyArg*6.f;
+					if(param6 < param2.getMin() ) param6.set(param6.getMin());
+					break;
+				case 's':
+					param6 += it->second.keyArg*6.f;
+					if(param6 > param6.getMax() ) param6.set(param6.getMax());
+					break;
+				default:
+					
+					// do nothing
+					break;
+			}
 		}
-		
+			
 		// erase & increment
 		if( it->second.keyArg<0.05f ){
 			auto item = enigmaPressedKeys.find(it->first);
@@ -565,6 +576,8 @@ void enigmatikSlideshow::enigmaKeyPressed(ofKeyEventArgs &e){
 	availableKeys.push_back('w');
 	availableKeys.push_back('a');
 	availableKeys.push_back('s');
+	availableKeys.push_back(OF_KEY_LEFT);
+	availableKeys.push_back(OF_KEY_RIGHT);
 	
 	// route key
 	for (int i=0; i<availableKeys.size(); ++i){
@@ -625,7 +638,7 @@ void enigmatikSlideshow::setParam3Solved( int& value ){
 	if(param3Solved == lastParam3Solved) return;
 	else lastParam3Solved = param3Solved;
 	
-	cout << "param3Solved = " << param3Solved << endl;
+	//cout << "param3Solved = " << param3Solved << endl;
 	
 	// triggers a new rendering
 	reRenderOutput = true;
@@ -638,7 +651,7 @@ void enigmatikSlideshow::setParam6Solved( int& value ){
 	if(param6Solved == lastParam6Solved) return;
 	else lastParam6Solved = param6Solved;
 	
-	cout << "param6Solved = " << param6Solved << endl;
+	//cout << "param6Solved = " << param6Solved << endl;
 	
 	// triggers a new rendering
 	reRenderOutput = true;
