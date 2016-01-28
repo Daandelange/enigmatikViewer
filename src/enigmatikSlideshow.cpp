@@ -81,7 +81,7 @@ void enigmatikSlideshow::setup() {
 	// 10 pixels per grid square
 	slideGrid.setResolution( ceil(ofGetWidth()/10), ceil(ofGetHeight()/10) );
 	slideGrid.setMode(OF_PRIMITIVE_TRIANGLES);
-	slideGrid.mapTexCoordsFromTexture(currentSlide.getTextureReference());
+	slideGrid.mapTexCoordsFromTexture(currentSlide.getTexture());
 	
 	// bind slide-change event to XML writedown
 	currentSlideNum.addListener(this, &enigmatikSlideshow::rememberSlideNum);
@@ -263,8 +263,8 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		sGlitch2.setUniform1f("param2Solved", param2Solved);
 		sGlitch2.setUniform1f("param3Solved", param3Solved);
 		sGlitch2.setUniform1f("param6Solved", param6Solved);
-		sGlitch2.setUniformTexture("tex0", currentSlide.getTextureReference(), 0);// currentSlide.getTextureReference().getTextureData().textureID );
-		//sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTextureReference(), 1);//nextSlide.getTextureReference().getTextureData().textureID );
+		sGlitch2.setUniformTexture("tex0", currentSlide.getTexture(), 0);// currentSlide.getTexture().getTextureData().textureID );
+		//sGlitch2.setUniformTexture("nextSlide1", nextSlide.getTexture(), 1);//nextSlide.getTexture().getTextureData().textureID );
 		//ofTexture t;
 		//t.allocate(glitchData2);
 		//t.loadData(glitchData2);
@@ -282,14 +282,14 @@ void enigmatikSlideshow::_update(ofEventArgs &e) {
 		sGlitch2.setUniform4f("iMouse", ofGetMouseX(), ofGetMouseY(), 0, 0 );
 		sGlitch2.setUniform1f("iGlobalTime", ofGetElapsedTimef());
 		sGlitch2.setUniform2f("resolution", ofGetWidth(), ofGetHeight() );
-		sGlitch2.setUniform2f("textureResolution", currentSlide.width, currentSlide.height );
+		sGlitch2.setUniform2f("textureResolution", currentSlide.getWidth(), currentSlide.getHeight() );
 		sGlitch2.setUniform2f("shapeCenterOffset", 0, 0 );// pShape->getCenterOffsetFromBoundingBox().x, pShape->getCenterOffsetFromBoundingBox().y);
 		sGlitch2.setUniform1f("textureScale", 1);
 		//sGlitch2.setUniform1i("tex", 0);
 		
-		//currentSlide.getTextureReference().bind();
+		//currentSlide.getTexture().bind();
 		slideGrid.draw();
-		//currentSlide.getTextureReference().unbind();
+		//currentSlide.getTexture().unbind();
 		
 		//slideGrid.drawWireframe();
 		sGlitch2.end();
@@ -431,7 +431,7 @@ void enigmatikSlideshow::reloadFolderContent(){
 	dir.sort();
 	dir.listDir(); // loads file repository into cache
 	
-	numSlides = dir.numFiles();
+	numSlides = dir.size();
 	
 	if(numSlides==0) ofLogNotice("enigmatikSlideshow::reloadFolderContent - there are no slides!");
 	
@@ -534,7 +534,7 @@ void enigmatikSlideshow::resetEffects(){
 	// randomize glitch zone 2
 	{
 		glitchData2.allocate( currentSlide.getWidth(), currentSlide.getHeight(), OF_IMAGE_COLOR_ALPHA );
-		int numPixels = currentSlide.width * currentSlide.height;
+		int numPixels = currentSlide.getWidth() * currentSlide.getHeight();
 		glitchZones2.resize(numPixels);
 		/*for(int i=0; i<numPixels;i++){
 		 // todo: make this "identifiable" zones (rects?) unstead of full random.
@@ -547,8 +547,8 @@ void enigmatikSlideshow::resetEffects(){
 		int numZones = 160;
 		for(int z=0; z<numZones;z++){
 			int centerPixel = (int) ofRandom(0, numPixels);
-			int centerX = centerPixel % currentSlide.width;
-			int centerY = ceil(centerPixel / currentSlide.width);
+			int centerX = centerPixel % ((int) currentSlide.getWidth() );
+			int centerY = ceil(centerPixel / currentSlide.getHeight());
 			int gWidth = ofRandom(20,120);
 			int gHeight = ofRandom(8,20);
 			
@@ -556,12 +556,12 @@ void enigmatikSlideshow::resetEffects(){
 			int x=centerX-gWidth/2;
 			if(x<0) x=0;
 			
-			for(; x<centerX+gWidth/2 && x<currentSlide.width; x++){
+			for(; x<centerX+gWidth/2 && x<currentSlide.getWidth(); x++){
 				int y=centerY-gHeight/2;
 				if(y<0) y=0;
 				
-				for(; y<centerY+gHeight/2 && y<currentSlide.height; y++ ){
-					glitchZones2[(x+y*currentSlide.width)] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
+				for(; y<centerY+gHeight/2 && y<currentSlide.getHeight(); y++ ){
+					glitchZones2[(x+y*currentSlide.getWidth())] = ofRandom(.0f,1.0f);//( round(ofRandom(.0f,1.0f)) == true )?ofRandom(.0f,1.0f):0;
 				}
 				
 			}
